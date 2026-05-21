@@ -1,11 +1,23 @@
-import { useMemo, useState } from 'react';
-import { Building2, ExternalLink, Gauge, MapPin, Phone, ShieldCheck, Sparkles, Target, UserRound, Wrench } from 'lucide-react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { Building2, ExternalLink, Gauge, MapPin, MessageSquarePlus, Phone, ShieldCheck, Sparkles, Target, UserRound, Wrench } from 'lucide-react';
 import { sampleLeads } from './data/sampleLeads';
-import type { Lead } from './types';
+import type { CallLog, Lead } from './types';
 import { calculatePriorityScore, gradeLead, summarizeLeadForCall } from './lib/leadScoring';
 import './styles.css';
 
+const CALL_LOG_STORAGE_KEY = 'awc-lead-call-logs-v1';
 const scoreLabel = (lead: Lead) => `${gradeLead(lead)} / ${calculatePriorityScore(lead)}`;
+
+const loadCallLogs = (): CallLog[] => {
+  if (typeof window === 'undefined') return [];
+
+  try {
+    const raw = window.localStorage.getItem(CALL_LOG_STORAGE_KEY);
+    return raw ? JSON.parse(raw) as CallLog[] : [];
+  } catch {
+    return [];
+  }
+};
 
 function ListBlock({ title, items }: { title: string; items: string[] }) {
   return (
@@ -35,7 +47,56 @@ function SourceLinks({ lead }: { lead: Lead }) {
   );
 }
 
-function LeadDetail({ lead }: { lead: Lead }) {
+function CallActivity({ lead, logs, onAddLog }: { lead: Lead; logs: CallLog[]; onAddLog: (log: CallLog) => void }) {
+  const [outcome, setOutcome] = useState<CallLog['outcome']>('Called');
+  const [comment, setComment] = useState('');
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!comment.trim()) return;
+
+    onAddLog({
+      id: `${lead.id}-${Date.now()}`,
+      leadId: lead.id,
+      createdAt: new Date().toISOString(),
+      outcome,
+      comment: comment.trim()
+    });
+    setOutcome('Called');
+    setComment('');
+  };
+
+  return (
+    <section className="card call-activity">
+      <h3><MessageSquarePlus size={18} /> Call log / comments</h3>
+      <form onSubmit={handleSubmit} className="call-form">
+        <select value={outcome} onChange={(event) => setOutcome(event.target.value as CallLog['outcome'])} aria-label="Call outcome">
+          <option>Called</option>
+          <option>Left voicemail</option>
+          <option>Connected</option>
+          <option>Follow-up needed</option>
+          <option>Not interested</option>
+        </select>
+        <textarea value={comment} onChange={(event) => setComment(event.target.value)} placeholder="Log what happened, next step, objections, owner notes…" />
+        <button type="submit">Add call note</button>
+      </form>
+      <div className="call-log-list">
+        {logs.length === 0 ? <p className="empty-state">No call notes yet.</p> : null}
+        {logs.map((log) => (
+          <article key={log.id} className="call-log-entry">
+            <div>
+              <strong>{log.outcome}</strong>
+              <time>{new Date(log.createdAt).toLocaleString()}</time>
+            </div>
+            <p>{log.comment}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function LeadDetail({ lead, logs, onAddLog }: { lead: Lead; logs: CallLog[]; onAddLog: (log: CallLog) => void }) {
   return (
     <main className="lead-detail">
       <section className="hero-card">
@@ -47,6 +108,9 @@ function LeadDetail({ lead }: { lead: Lead }) {
             <span><Building2 size={16} /> {lead.industry}</span>
             <span><MapPin size={16} /> {lead.location}</span>
             {lead.phone ? <span><Phone size={16} /> {lead.phone}</span> : null}
+          </div>
+          <div className="niche-tags">
+            {lead.niches.map((niche) => <span key={niche}>{niche}</span>)}
           </div>
         </div>
         <div className="score-card">
@@ -67,6 +131,8 @@ function LeadDetail({ lead }: { lead: Lead }) {
           <p>{lead.contact.summary}</p>
         </section>
       </section>
+
+      <CallActivity lead={lead} logs={logs} onAddLog={onAddLog} />
 
       <section className="grid three">
         <ListBlock title="Strengths" items={lead.strengths} />
@@ -106,12 +172,27 @@ function LeadDetail({ lead }: { lead: Lead }) {
 
 export default function App() {
   const [query, setQuery] = useState('');
+  const [selectedNiche, setSelectedNiche] = useState('All niches');
   const [selectedId, setSelectedId] = useState(sampleLeads[0].id);
+  const [callLogs, setCallLogs] = useState<CallLog[]>(loadCallLogs);
+
+  useEffect(() => {
+    window.localStorage.setItem(CALL_LOG_STORAGE_KEY, JSON.stringify(callLogs));
+  }, [callLogs]);
+
+  const niches = useMemo(() => ['All niches', ...Array.from(new Set(sampleLeads.flatMap((lead) => lead.niches))).sort()], []);
+
   const filtered = useMemo(() => {
-    const q = query.toLowerCase();
-    return sampleLeads.filter((lead) => [lead.companyName, lead.industry, lead.location, lead.status].join(' ').toLowerCase().includes(q));
-  }, [query]);
-  const selected = sampleLeads.find((lead) => lead.id === selectedId) ?? filtered[0] ?? sampleLeads[0];
+    const q = query.toLowerCase().trim();
+    return sampleLeads.filter((lead) => {
+      const matchesNiche = selectedNiche === 'All niches' || lead.niches.includes(selectedNiche);
+      const haystack = [lead.companyName, lead.industry, lead.location, lead.status, ...lead.niches].join(' ').toLowerCase();
+      return matchesNiche && (!q || haystack.includes(q));
+    });
+  }, [query, selectedNiche]);
+
+  const selected = filtered.find((lead) => lead.id === selectedId) ?? filtered[0] ?? sampleLeads[0];
+  const selectedLogs = callLogs.filter((log) => log.leadId === selected.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
   return (
     <div className="app-shell">
@@ -120,25 +201,35 @@ export default function App() {
           <Wrench />
           <div>
             <strong>AWC Leads</strong>
-            <span>Ethical OSINT dashboard</span>
+            <span>Private ethical OSINT dashboard</span>
           </div>
         </div>
-        <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Filter leads…" />
+        <label className="filter-label" htmlFor="lead-search">Search by company, niche, location, status</label>
+        <input id="lead-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Try HVAC, dental, field service…" />
+        <label className="filter-label" htmlFor="niche-filter">Niche</label>
+        <select id="niche-filter" className="sidebar-select" value={selectedNiche} onChange={(event) => setSelectedNiche(event.target.value)}>
+          {niches.map((niche) => <option key={niche}>{niche}</option>)}
+        </select>
+        <div className="result-count">{filtered.length} lead{filtered.length === 1 ? '' : 's'} matched</div>
         <div className="lead-list">
-          {filtered.map((lead) => (
-            <button key={lead.id} className={lead.id === selected.id ? 'active' : ''} onClick={() => setSelectedId(lead.id)}>
-              <strong>{lead.companyName}</strong>
-              <span>{lead.industry}</span>
-              <small>{scoreLabel(lead)} · {lead.status}</small>
-            </button>
-          ))}
+          {filtered.map((lead) => {
+            const logCount = callLogs.filter((log) => log.leadId === lead.id).length;
+            return (
+              <button key={lead.id} className={lead.id === selected.id ? 'active' : ''} onClick={() => setSelectedId(lead.id)}>
+                <strong>{lead.companyName}</strong>
+                <span>{lead.industry}</span>
+                <small>{scoreLabel(lead)} · {lead.status} · {lead.niches.slice(0, 2).join(', ')}</small>
+                {logCount > 0 ? <em>{logCount} call note{logCount === 1 ? '' : 's'}</em> : null}
+              </button>
+            );
+          })}
         </div>
         <section className="ethics">
           <h2><ShieldCheck size={16} /> Guardrails</h2>
-          <p>Use public business sources only. No passwords, breaches, personal-life stalking, or private data. Every claim needs a source.</p>
+          <p>Private workspace. Use public business sources only. No passwords, breaches, personal-life stalking, or private data. Every claim needs a source.</p>
         </section>
       </aside>
-      <LeadDetail lead={selected} />
+      <LeadDetail lead={selected} logs={selectedLogs} onAddLog={(log) => setCallLogs((current) => [log, ...current])} />
     </div>
   );
 }

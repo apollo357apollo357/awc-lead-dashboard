@@ -7,6 +7,7 @@ export const sampleLeads: Lead[] = [
     companyName: 'Prairie Peak HVAC',
     website: 'https://example.com/prairie-peak-hvac',
     industry: 'Commercial HVAC service',
+    niches: ['HVAC', 'Commercial service', 'Field service', 'Maintenance contracts'],
     location: 'Edmonton, AB',
     address: 'Public business address to be verified',
     phone: 'Public business phone to be verified',
@@ -85,5 +86,42 @@ export const sampleLeads: Lead[] = [
       { label: 'Website', url: 'https://example.com/prairie-peak-hvac' },
       { label: 'Google Business Profile / reviews', url: 'https://www.google.com/search?q=example+hvac+edmonton' }
     ]
+  }),
+  enrichLeadScores({
+    id: 'northline-dental-group',
+    companyName: 'Northline Dental Group',
+    website: 'https://example.com/northline-dental',
+    industry: 'Dental clinic',
+    niches: ['Dental', 'Healthcare', 'Appointment-based service', 'Patient intake'],
+    location: 'Calgary, AB',
+    phone: 'Public business phone to be verified',
+    status: 'Researching',
+    summary: 'Fictional multi-provider clinic lead showing appointment flow, patient intake, insurance/document collection, reminders, and review follow-up opportunities.',
+    strengths: ['High appointment volume', 'Recurring patient communication needs', 'Clear operational value from reduced no-shows and smoother intake'],
+    weaknesses: ['Patient forms, reminders, and follow-up may be split across tools', 'Front desk team likely handles repetitive status questions', 'Website may not clearly route emergency, new patient, and hygiene requests'],
+    reviewSignals: ['Look for wait-time, reminder, insurance, and booking-friction mentions', 'Flag positive staff/process mentions to preserve in automation'],
+    sellingPoints: ['Automate appointment reminders and pre-visit intake', 'Route new patient requests into a consistent qualification workflow', 'Create post-visit review and reactivation sequences'],
+    discoveryQuestions: ['Where do new-patient requests go today?', 'What causes the most front-desk callbacks?', 'How are incomplete forms or missed appointments handled?'],
+    firstCallAngle: 'Lead with patient intake and reminder friction, then ask where the front desk loses the most time.',
+    fitScore: 80,
+    painScore: 76,
+    reachabilityScore: 68,
+    valueScore: 78,
+    contact: {
+      name: 'Clinic Manager / Owner Dentist',
+      title: 'Likely decision maker',
+      summary: 'Keep outreach focused on public clinic operations, patient experience, and scheduling workflow.',
+      conversationOpeners: ['Ask how new patient intake is handled today.', 'Reference public booking flow if visible.', 'Frame automation around staff time and patient experience.'],
+      boundaries: ['Do not infer patient data.', 'Do not collect medical/private health information.', 'Use only public business-facing facts.'],
+      sources: [{ label: 'Company website', url: 'https://example.com/northline-dental' }]
+    },
+    websiteAudit: {
+      grade: 'B',
+      conversionIssues: ['New-patient CTA and emergency CTA may need separation', 'Pre-visit forms not visibly connected to booking'],
+      systemSignals: ['Appointment-based business with reminder/no-show risk', 'Likely repetitive intake and insurance/document workflows'],
+      quickWins: ['Segment request types', 'Add automated intake reminders', 'Trigger post-visit review requests'],
+      technicalNotes: ['Verify booking platform, form handling, and mobile performance during real enrichment']
+    },
+    sources: [{ label: 'Website', url: 'https://example.com/northline-dental' }]
   })
 ];

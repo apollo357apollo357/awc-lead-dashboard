@@ -7,6 +7,7 @@ const baseLead: Lead = {
   companyName: 'Test Services',
   website: 'https://example.com',
   industry: 'Home services',
+  niches: ['Home services', 'Field service'],
   location: 'Edmonton, AB',
   status: 'New',
   summary: 'A growing service business with visible intake and scheduling complexity.',

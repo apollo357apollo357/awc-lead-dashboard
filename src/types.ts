@@ -24,11 +24,20 @@ export type WebsiteAudit = {
   technicalNotes: string[];
 };
 
+export type CallLog = {
+  id: string;
+  leadId: string;
+  createdAt: string;
+  outcome: 'Called' | 'Left voicemail' | 'Connected' | 'Follow-up needed' | 'Not interested';
+  comment: string;
+};
+
 export type Lead = {
   id: string;
   companyName: string;
   website: string;
   industry: string;
+  niches: string[];
   location: string;
   address?: string;
   phone?: string;
