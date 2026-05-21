@@ -1,0 +1,51 @@
+export type EvidenceSource = {
+  label: string;
+  url: string;
+  note?: string;
+};
+
+export type ContactProfile = {
+  name: string;
+  title: string;
+  linkedinUrl?: string;
+  email?: string;
+  phone?: string;
+  summary: string;
+  conversationOpeners: string[];
+  boundaries: string[];
+  sources: EvidenceSource[];
+};
+
+export type WebsiteAudit = {
+  grade: 'A' | 'B' | 'C' | 'D';
+  conversionIssues: string[];
+  systemSignals: string[];
+  quickWins: string[];
+  technicalNotes: string[];
+};
+
+export type Lead = {
+  id: string;
+  companyName: string;
+  website: string;
+  industry: string;
+  location: string;
+  address?: string;
+  phone?: string;
+  status: 'New' | 'Researching' | 'Qualified' | 'Contacted' | 'Follow-up' | 'Not fit';
+  summary: string;
+  strengths: string[];
+  weaknesses: string[];
+  reviewSignals: string[];
+  sellingPoints: string[];
+  discoveryQuestions: string[];
+  firstCallAngle: string;
+  fitScore: number;
+  painScore: number;
+  reachabilityScore: number;
+  valueScore: number;
+  priorityScore?: number;
+  contact: ContactProfile;
+  websiteAudit: WebsiteAudit;
+  sources: EvidenceSource[];
+};
