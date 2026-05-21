@@ -98,7 +98,7 @@ function ContactActions({ lead }: { lead: Lead }) {
       {lead.contact.email ? (
         <>
           <a href={`mailto:${lead.contact.email}?subject=${encodeURIComponent(`AWC follow-up for ${lead.companyName}`)}`}>{lead.contact.email}</a>
-          <p>Use this to send notes, examples, or a follow-up resource while the conversation is live.</p>
+          <p>Use this to send notes or a follow-up resource while the conversation is live.</p>
         </>
       ) : <p>No public business email captured yet. Add it during enrichment before calling.</p>}
     </section>
@@ -192,7 +192,7 @@ function CandidateProfile({ candidate, onRunOsint }: { candidate: CandidateBusin
         <div>
           <p className="eyebrow">Real candidate seed profile</p>
           <h1>{candidate.companyName}</h1>
-          <p className="summary">This is a real public business candidate from OpenStreetMap seed data. Click OSINT to generate the AWC workflow-intelligence profile for this specific company.</p>
+          <p className="summary">This is a real public business candidate from OpenStreetMap seed data. Click OSINT to build the AWC workflow-intelligence profile for this specific company.</p>
           <div className="meta-row">
             <span><Building2 size={16} /> {candidate.category.replace(/_/g, ' ')}</span>
             <span><MapPin size={16} /> {candidate.location}</span>
@@ -224,8 +224,8 @@ function CandidateProfile({ candidate, onRunOsint }: { candidate: CandidateBusin
       </section>
 
       <section className="card callprep">
-        <h3><ShieldCheck size={18} /> Data boundary</h3>
-        <p>No example leads are loaded. This seed list is real public candidate data; generated OSINT fields are labeled as hypotheses until verified by source links or a conversation.</p>
+        <h3><ShieldCheck size={18} /> Source record</h3>
+        <p>This profile starts from a real public business record and becomes an AWC outreach profile for that company.</p>
         <a href={candidate.sourceUrl} target="_blank" rel="noreferrer">Open source record <ExternalLink size={14} /></a>
       </section>
     </main>
@@ -299,7 +299,7 @@ function LeadDetail({ lead, logs, onAddLog }: { lead: Lead; logs: CallLog[]; onA
 
       <section className="grid two">
         <ListBlock title="LinkedIn conversation openers" items={lead.contact.conversationOpeners} />
-        <ListBlock title="OSINT boundaries" items={lead.contact.boundaries} />
+        <ListBlock title="Outreach focus" items={lead.contact.boundaries} />
       </section>
 
       <section className="card callprep">
@@ -365,7 +365,7 @@ export default function App() {
           <span>Candidate backend</span>
           <strong>{candidateBusinesses.length}</strong>
           <p>{osintProfileIds.length} OSINT profile{osintProfileIds.length === 1 ? '' : 's'} generated.</p>
-          <small>Seeded from real public business records. No example data.</small>
+          <small>Seeded from real public business records.</small>
         </section>
         <label className="filter-label" htmlFor="lead-search">Search by company, category, location, website, phone, email</label>
         <input id="lead-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Try roofing, dental, Spruce Grove…" />

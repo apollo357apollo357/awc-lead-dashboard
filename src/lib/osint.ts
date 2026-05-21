@@ -130,16 +130,16 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness): Lea
     address: candidate.address,
     phone: candidate.phone,
     status: 'New',
-    summary: `${candidate.companyName} is a real public candidate from ${candidate.source} in ${location}. The current profile is pre-call OSINT: verified public listing data plus algorithmic workflow hypotheses, not invented internal facts.`,
+    summary: `${candidate.companyName} is a real public candidate from ${candidate.source} in ${location}. The OSINT profile turns the public listing into AWC-specific outreach prep focused on intake, follow-up, handoffs, and tool alignment.`,
     strengths: [
       candidate.website ? 'Has a public website to inspect for intake, CTA, form, and follow-up flow.' : 'Has a public business listing but no website captured in the seed data.',
       candidate.phone ? 'Public phone number is available for outbound calling.' : 'Phone number was not captured in the public seed record.',
-      candidate.email ? 'Public email is available for live follow-up.' : 'Public email was not captured yet; OSINT should verify the website/contact page.'
+      candidate.email ? 'Public email is available for live follow-up.' : 'Public email is not captured in the seed record; use phone or website-first outreach.'
     ],
     weaknesses: [
-      'Needs manual website/contact-page verification before treating any hypothesis as fact.',
-      'Review pain, form quality, CRM/tool stack, and owner/operator details are unknown until OSINT is run against public sources.',
-      'No private or personal contact data is inferred.'
+      'Website/contact-page workflow still needs to be mapped before the call.',
+      'Review pain, form quality, CRM/tool stack, and owner/operator details should be captured during outreach.',
+      'Current profile is business-focused and does not use private personal data.'
     ],
     reviewSignals: [
       'Look for review mentions of response time, missed calls, scheduling, quoting, communication, reminders, or follow-up.',
@@ -158,25 +158,25 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness): Lea
       title: `Decision maker for ${candidate.companyName}`,
       email: candidate.email,
       phone: candidate.phone,
-      summary: 'Specific person not populated from seed data. Use public website, LinkedIn, registry pages, and call discovery to identify the right business contact.',
+      summary: 'Start with the owner/operator or operations lead unless a public website, LinkedIn page, registry page, or call discovery identifies a more specific contact.',
       conversationOpeners: [
         `I was looking at ${candidate.companyName}'s public business listing and had a practical question about your intake/follow-up workflow.`,
-        candidate.website ? `I saw the website listed as ${website}; I wanted to understand what happens after a new inquiry comes in.` : 'I could not verify a website from the seed data yet, so I would lead with a quick public-listing verification question.',
+        candidate.website ? `I saw the website listed as ${website}; I wanted to understand what happens after a new inquiry comes in.` : 'I found your public business listing and wanted to ask how new inquiries are handled today.',
         `For ${industry.toLowerCase()} teams, the hidden bottleneck is often not marketing — it is the handoff after the lead arrives.`
       ],
       boundaries: [
-        'Use only public business data and role-based contact assumptions until a person is verified.',
-        'Do not infer private personal details, revenue, employee count, or internal systems without evidence.',
-        'Treat all algorithmic OSINT fields as hypotheses until backed by a source link or conversation.'
+        'Lead with public business context, not personal details.',
+        'Keep the conversation on intake, follow-up, handoffs, and tool alignment.',
+        'Capture exact reservations, feedback, and friction for Kadwell content and funnel updates.'
       ],
       sources: [{ label: 'OpenStreetMap candidate record', url: candidate.sourceUrl, note: sourceIdForCandidate(candidate) }]
     },
     websiteAudit: {
       grade: website ? 'C' : 'D',
       conversionIssues: [
-        website ? 'Website exists; inspect whether the primary CTA leads to a measurable intake path.' : 'No website captured in seed data; verify via web search before outreach.',
-        'Unknown whether contact forms trigger structured follow-up, routing, reminders, or CRM capture.',
-        'Unknown whether calls, forms, emails, and reviews are connected to one operational workflow.'
+        website ? 'Website exists; map whether the primary CTA leads to a measurable intake path.' : 'No website captured in seed data; use phone-first outreach and add website if found.',
+        'Map whether contact forms trigger structured follow-up, routing, reminders, or CRM capture.',
+        'Map whether calls, forms, emails, and reviews are connected to one operational workflow.'
       ],
       systemSignals: [
         candidate.publicTags.opening_hours ? `Published hours suggest schedule-sensitive intake: ${candidate.publicTags.opening_hours}` : 'Operating hours not captured in seed record.',
@@ -189,14 +189,14 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness): Lea
         'Capture one concrete public friction point before calling so the outreach feels specific.'
       ],
       technicalNotes: [
-        'Website needs manual verification; seed profile uses public listing data and deterministic AWC heuristics only.',
+        'Workflow profile generated from public listing data and AWC outreach scoring.',
         `Seed source: ${sourceIdForCandidate(candidate)}`,
         `Coordinates: ${candidate.lat}, ${candidate.lon}`
       ]
     },
     sources: [
       { label: 'OpenStreetMap candidate record', url: candidate.sourceUrl, note: sourceIdForCandidate(candidate) },
-      ...(website ? [{ label: 'Company website', url: website, note: 'Captured from public listing; verify before relying on it.' }] : [])
+      ...(website ? [{ label: 'Company website', url: website, note: 'Captured from public listing.' }] : [])
     ]
   };
 }

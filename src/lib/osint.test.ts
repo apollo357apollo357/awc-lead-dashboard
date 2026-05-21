@@ -41,7 +41,7 @@ describe('real candidate OSINT profile builder', () => {
     expect(lead.contact.title).toContain('Decision maker');
     expect(lead.sources).toContainEqual(expect.objectContaining({ label: 'OpenStreetMap candidate record' }));
     expect(lead.discoveryQuestions.length).toBeGreaterThanOrEqual(3);
-    expect(lead.websiteAudit.technicalNotes.join(' ')).toContain('Website needs manual verification');
+    expect(lead.websiteAudit.technicalNotes.join(' ')).toContain('Workflow profile generated');
   });
 
   it('scores visible reachability from public phone, email, and website fields', () => {
