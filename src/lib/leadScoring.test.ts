@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Lead } from '../types';
-import { calculatePriorityScore, gradeLead, summarizeLeadForCall } from './leadScoring';
+import { calculatePriorityScore, countWeeklyConversations, createVoicemailScript, gradeLead, summarizeLeadForCall } from './leadScoring';
 
 const baseLead: Lead = {
   id: 'test',
@@ -24,6 +24,7 @@ const baseLead: Lead = {
   contact: {
     name: 'Jordan Owner',
     title: 'Owner',
+    email: 'jordan@example.com',
     summary: 'Business owner/operator focused on growth.',
     conversationOpeners: ['Mention their strong reviews.'],
     boundaries: ['Keep outreach business-focused.'],
@@ -55,5 +56,26 @@ describe('lead scoring', () => {
     expect(summary).toContain('Jordan Owner');
     expect(summary).toContain('Lead with visible intake friction');
     expect(summary).toContain('How do new inquiries get routed today?');
+  });
+
+  it('counts only real conversations toward the weekly outbound goal', () => {
+    const logs = [
+      { id: '1', leadId: 'test', createdAt: '2026-06-10T10:00:00.000Z', outcome: 'Left voicemail' as const, comment: 'No answer' },
+      { id: '2', leadId: 'test', createdAt: '2026-06-11T10:00:00.000Z', outcome: 'Connected' as const, comment: 'Spoke with owner' },
+      { id: '3', leadId: 'test', createdAt: '2026-06-12T10:00:00.000Z', outcome: 'Follow-up needed' as const, comment: 'Real conversation, asked for email' },
+      { id: '4', leadId: 'test', createdAt: '2026-06-01T10:00:00.000Z', outcome: 'Connected' as const, comment: 'Previous week' }
+    ];
+
+    expect(countWeeklyConversations(logs, new Date('2026-06-10T00:00:00.000Z'), new Date('2026-06-17T00:00:00.000Z'))).toBe(2);
+  });
+
+  it('creates a tailored voicemail script with the lead angle and email follow-up hook', () => {
+    const script = createVoicemailScript(baseLead);
+
+    expect(script).toContain('Jordan Owner');
+    expect(script).toContain('Test Services');
+    expect(script).toContain('Jordan@example.com'.toLowerCase());
+    expect(script).toContain('How do new inquiries get routed today?');
+    expect(script).toContain('Apollo with Automated Workflow Consulting');
   });
 });

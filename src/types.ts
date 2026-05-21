@@ -30,6 +30,10 @@ export type CallLog = {
   createdAt: string;
   outcome: 'Called' | 'Left voicemail' | 'Connected' | 'Follow-up needed' | 'Not interested';
   comment: string;
+  reservation?: string;
+  feedback?: string;
+  friction?: string;
+  emailSent?: boolean;
 };
 
 export type Lead = {

@@ -10,6 +10,11 @@ a { color: inherit; }
 .filter-label { display: block; color: #d8dccb; font-size: .78rem; font-weight: 800; letter-spacing: .04em; margin: 12px 0 8px; text-transform: uppercase; }
 .sidebar input, .sidebar-select { width: 100%; border: 1px solid #33382e; background: #1d211a; color: #fff; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
 .result-count { color: #d7ff3f; font-weight: 800; font-size: .85rem; margin: 4px 0 14px; }
+.metric-card { border: 1px solid #303626; background: #d7ff3f; color: #10120f; border-radius: 18px; padding: 16px; margin-bottom: 18px; }
+.metric-card span { display: block; text-transform: uppercase; font-size: .72rem; font-weight: 900; letter-spacing: .08em; }
+.metric-card strong { display: block; font-size: 2.8rem; line-height: 1; margin: 6px 0; }
+.metric-card p { margin: 0 0 6px; font-weight: 900; }
+.metric-card small { color: #303626; font-weight: 700; }
 .lead-list { display: grid; gap: 10px; }
 .lead-list button { text-align: left; border: 1px solid #303626; background: #181c15; color: #fff; border-radius: 16px; padding: 14px; cursor: pointer; }
 .lead-list button.active, .lead-list button:hover { border-color: #d7ff3f; background: #242a1d; }
@@ -50,8 +55,10 @@ li { margin: 8px 0; line-height: 1.45; color: #3e4439; }
 .callprep pre { white-space: pre-wrap; background: #10120f; color: #eaffb0; border-radius: 18px; padding: 18px; line-height: 1.5; overflow-x: auto; }
 .call-activity { margin-bottom: 20px; border-color: #cbd3b7; }
 .call-form { display: grid; gap: 10px; }
+.field-help { margin-top: -4px; color: #69715e; font-weight: 600; }
 .call-form select, .call-form textarea { width: 100%; border: 1px solid #d8dccb; border-radius: 14px; padding: 12px 14px; font: inherit; }
 .call-form textarea { min-height: 110px; resize: vertical; }
+.checkbox-row { display: inline-flex; gap: 8px; align-items: center; color: #3e4439; font-weight: 800; }
 .call-form button { justify-self: start; border: none; border-radius: 999px; background: #10120f; color: #d7ff3f; padding: 10px 16px; font-weight: 900; cursor: pointer; }
 .call-log-list { display: grid; gap: 10px; margin-top: 16px; }
 .empty-state { margin-bottom: 0; color: #69715e; }
@@ -62,4 +69,5 @@ li { margin: 8px 0; line-height: 1.45; color: #3e4439; }
 .sources { display: grid; gap: 10px; }
 .sources a { display: flex; align-items: center; gap: 8px; border: 1px solid #e3e6d8; background: #f7f8f1; border-radius: 14px; padding: 12px; text-decoration: none; font-weight: 800; }
 .sources small { margin-left: auto; color: #69715e; font-weight: 500; }
+.contact-actions a { display: inline-flex; width: fit-content; border-radius: 999px; background: #10120f; color: #d7ff3f; padding: 10px 14px; text-decoration: none; font-weight: 900; }
 @media (max-width: 1100px) { .app-shell { grid-template-columns: 1fr; } .sidebar { height: auto; position: static; } .hero-card, .two, .three, .four { grid-template-columns: 1fr; } }

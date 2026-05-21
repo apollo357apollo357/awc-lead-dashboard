@@ -1,11 +1,12 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { Building2, ExternalLink, Gauge, MapPin, MessageSquarePlus, Phone, ShieldCheck, Sparkles, Target, UserRound, Wrench } from 'lucide-react';
+import { Building2, ExternalLink, Gauge, Mail, MapPin, MessageSquarePlus, Phone, ShieldCheck, Sparkles, Target, UserRound, Voicemail, Wrench } from 'lucide-react';
 import { sampleLeads } from './data/sampleLeads';
 import type { CallLog, Lead } from './types';
-import { calculatePriorityScore, gradeLead, summarizeLeadForCall } from './lib/leadScoring';
+import { calculatePriorityScore, countWeeklyConversations, createVoicemailScript, gradeLead, summarizeLeadForCall } from './lib/leadScoring';
 import './styles.css';
 
 const CALL_LOG_STORAGE_KEY = 'awc-lead-call-logs-v1';
+const WEEKLY_CONVERSATION_GOAL = 5;
 const scoreLabel = (lead: Lead) => `${gradeLead(lead)} / ${calculatePriorityScore(lead)}`;
 
 const loadCallLogs = (): CallLog[] => {
@@ -17,6 +18,21 @@ const loadCallLogs = (): CallLog[] => {
   } catch {
     return [];
   }
+};
+
+const startOfWeek = (date: Date) => {
+  const start = new Date(date);
+  const day = start.getDay();
+  const diff = start.getDate() - day + (day === 0 ? -6 : 1);
+  start.setDate(diff);
+  start.setHours(0, 0, 0, 0);
+  return start;
+};
+
+const endOfWeek = (date: Date) => {
+  const end = startOfWeek(date);
+  end.setDate(end.getDate() + 7);
+  return end;
 };
 
 function ListBlock({ title, items }: { title: string; items: string[] }) {
@@ -47,28 +63,81 @@ function SourceLinks({ lead }: { lead: Lead }) {
   );
 }
 
+function WeeklyMetrics({ logs }: { logs: CallLog[] }) {
+  const now = new Date();
+  const weeklyConversations = countWeeklyConversations(logs, startOfWeek(now), endOfWeek(now));
+  const remaining = Math.max(0, WEEKLY_CONVERSATION_GOAL - weeklyConversations);
+
+  return (
+    <section className="metric-card">
+      <span>Balagus outbound metric</span>
+      <strong>{weeklyConversations}/{WEEKLY_CONVERSATION_GOAL}</strong>
+      <p>{remaining === 0 ? 'Weekly conversation target hit.' : `${remaining} real conversation${remaining === 1 ? '' : 's'} left this week.`}</p>
+      <small>Only Connected + Follow-up needed count. Voicemails do not.</small>
+    </section>
+  );
+}
+
+function ContactActions({ lead }: { lead: Lead }) {
+  return (
+    <section className="card contact-actions">
+      <h3><Mail size={18} /> Email during call</h3>
+      {lead.contact.email ? (
+        <>
+          <a href={`mailto:${lead.contact.email}?subject=${encodeURIComponent(`AWC follow-up for ${lead.companyName}`)}`}>{lead.contact.email}</a>
+          <p>Use this to send notes, examples, or a follow-up resource while the conversation is live.</p>
+        </>
+      ) : <p>No public business email captured yet. Add it during enrichment before calling.</p>}
+    </section>
+  );
+}
+
+function VoicemailScript({ lead }: { lead: Lead }) {
+  return (
+    <section className="card callprep">
+      <h3><Voicemail size={18} /> Tailored voicemail script</h3>
+      <pre>{createVoicemailScript(lead)}</pre>
+    </section>
+  );
+}
+
 function CallActivity({ lead, logs, onAddLog }: { lead: Lead; logs: CallLog[]; onAddLog: (log: CallLog) => void }) {
   const [outcome, setOutcome] = useState<CallLog['outcome']>('Called');
   const [comment, setComment] = useState('');
+  const [reservation, setReservation] = useState('');
+  const [feedback, setFeedback] = useState('');
+  const [friction, setFriction] = useState('');
+  const [emailSent, setEmailSent] = useState(false);
+
+  const hasNote = [comment, reservation, feedback, friction].some((value) => value.trim());
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!comment.trim()) return;
+    if (!hasNote) return;
 
     onAddLog({
       id: `${lead.id}-${Date.now()}`,
       leadId: lead.id,
       createdAt: new Date().toISOString(),
       outcome,
-      comment: comment.trim()
+      comment: comment.trim(),
+      reservation: reservation.trim(),
+      feedback: feedback.trim(),
+      friction: friction.trim(),
+      emailSent
     });
     setOutcome('Called');
     setComment('');
+    setReservation('');
+    setFeedback('');
+    setFriction('');
+    setEmailSent(false);
   };
 
   return (
     <section className="card call-activity">
-      <h3><MessageSquarePlus size={18} /> Call log / comments</h3>
+      <h3><MessageSquarePlus size={18} /> Call log / Kadwell content fuel</h3>
+      <p className="field-help">Capture objections, reservations, feedback, and funnel friction so inbound can turn it into counter-articles, blog topics, and funnel updates.</p>
       <form onSubmit={handleSubmit} className="call-form">
         <select value={outcome} onChange={(event) => setOutcome(event.target.value as CallLog['outcome'])} aria-label="Call outcome">
           <option>Called</option>
@@ -77,18 +146,25 @@ function CallActivity({ lead, logs, onAddLog }: { lead: Lead; logs: CallLog[]; o
           <option>Follow-up needed</option>
           <option>Not interested</option>
         </select>
-        <textarea value={comment} onChange={(event) => setComment(event.target.value)} placeholder="Log what happened, next step, objections, owner notes…" />
-        <button type="submit">Add call note</button>
+        <textarea value={comment} onChange={(event) => setComment(event.target.value)} placeholder="Conversation notes / next step…" />
+        <textarea value={reservation} onChange={(event) => setReservation(event.target.value)} placeholder="Reservations or objections: price, timing, trust, internal capacity…" />
+        <textarea value={feedback} onChange={(event) => setFeedback(event.target.value)} placeholder="Feedback: what landed, what confused them, exact phrasing they used…" />
+        <textarea value={friction} onChange={(event) => setFriction(event.target.value)} placeholder="Friction: website/funnel gaps, missing proof, unclear offer, bad CTA…" />
+        <label className="checkbox-row"><input type="checkbox" checked={emailSent} onChange={(event) => setEmailSent(event.target.checked)} /> Emailed resource during/after call</label>
+        <button type="submit">Add call intelligence</button>
       </form>
       <div className="call-log-list">
-        {logs.length === 0 ? <p className="empty-state">No call notes yet.</p> : null}
+        {logs.length === 0 ? <p className="empty-state">No call intelligence yet.</p> : null}
         {logs.map((log) => (
           <article key={log.id} className="call-log-entry">
             <div>
-              <strong>{log.outcome}</strong>
+              <strong>{log.outcome}{log.emailSent ? ' · emailed' : ''}</strong>
               <time>{new Date(log.createdAt).toLocaleString()}</time>
             </div>
-            <p>{log.comment}</p>
+            {log.comment ? <p>{log.comment}</p> : null}
+            {log.reservation ? <p><b>Reservation:</b> {log.reservation}</p> : null}
+            {log.feedback ? <p><b>Feedback:</b> {log.feedback}</p> : null}
+            {log.friction ? <p><b>Friction:</b> {log.friction}</p> : null}
           </article>
         ))}
       </div>
@@ -108,6 +184,7 @@ function LeadDetail({ lead, logs, onAddLog }: { lead: Lead; logs: CallLog[]; onA
             <span><Building2 size={16} /> {lead.industry}</span>
             <span><MapPin size={16} /> {lead.location}</span>
             {lead.phone ? <span><Phone size={16} /> {lead.phone}</span> : null}
+            {lead.contact.email ? <span><Mail size={16} /> {lead.contact.email}</span> : null}
           </div>
           <div className="niche-tags">
             {lead.niches.map((niche) => <span key={niche}>{niche}</span>)}
@@ -130,6 +207,11 @@ function LeadDetail({ lead, logs, onAddLog }: { lead: Lead; logs: CallLog[]; onA
           <p><strong>{lead.contact.name}</strong> — {lead.contact.title}</p>
           <p>{lead.contact.summary}</p>
         </section>
+      </section>
+
+      <section className="grid two">
+        <ContactActions lead={lead} />
+        <VoicemailScript lead={lead} />
       </section>
 
       <CallActivity lead={lead} logs={logs} onAddLog={onAddLog} />
@@ -186,7 +268,7 @@ export default function App() {
     const q = query.toLowerCase().trim();
     return sampleLeads.filter((lead) => {
       const matchesNiche = selectedNiche === 'All niches' || lead.niches.includes(selectedNiche);
-      const haystack = [lead.companyName, lead.industry, lead.location, lead.status, ...lead.niches].join(' ').toLowerCase();
+      const haystack = [lead.companyName, lead.industry, lead.location, lead.status, lead.contact.email ?? '', ...lead.niches].join(' ').toLowerCase();
       return matchesNiche && (!q || haystack.includes(q));
     });
   }, [query, selectedNiche]);
@@ -201,10 +283,11 @@ export default function App() {
           <Wrench />
           <div>
             <strong>AWC Leads</strong>
-            <span>Private ethical OSINT dashboard</span>
+            <span>Outbound OSINT + inbound fuel</span>
           </div>
         </div>
-        <label className="filter-label" htmlFor="lead-search">Search by company, niche, location, status</label>
+        <WeeklyMetrics logs={callLogs} />
+        <label className="filter-label" htmlFor="lead-search">Search by company, niche, location, status, email</label>
         <input id="lead-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Try HVAC, dental, field service…" />
         <label className="filter-label" htmlFor="niche-filter">Niche</label>
         <select id="niche-filter" className="sidebar-select" value={selectedNiche} onChange={(event) => setSelectedNiche(event.target.value)}>
@@ -219,6 +302,7 @@ export default function App() {
                 <strong>{lead.companyName}</strong>
                 <span>{lead.industry}</span>
                 <small>{scoreLabel(lead)} · {lead.status} · {lead.niches.slice(0, 2).join(', ')}</small>
+                {lead.contact.email ? <small>{lead.contact.email}</small> : null}
                 {logCount > 0 ? <em>{logCount} call note{logCount === 1 ? '' : 's'}</em> : null}
               </button>
             );
@@ -226,7 +310,7 @@ export default function App() {
         </div>
         <section className="ethics">
           <h2><ShieldCheck size={16} /> Guardrails</h2>
-          <p>Private workspace. Use public business sources only. No passwords, breaches, personal-life stalking, or private data. Every claim needs a source.</p>
+          <p>Goal: five real conversations/week. Capture reservations, feedback, and friction for Kadwell's blogs, counter-articles, paid ads, and funnel updates.</p>
         </section>
       </aside>
       <LeadDetail lead={selected} logs={selectedLogs} onAddLog={(log) => setCallLogs((current) => [log, ...current])} />

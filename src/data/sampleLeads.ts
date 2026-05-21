@@ -46,6 +46,7 @@ export const sampleLeads: Lead[] = [
       name: 'Owner / Operations Manager',
       title: 'Likely decision maker',
       linkedinUrl: 'LinkedIn URL to be added from public source',
+      email: 'ops@example.com',
       summary: 'Use LinkedIn only for professional context: role, tenure, business themes, public posts, and shared local/business context. Do not include personal-life details.',
       conversationOpeners: [
         "Mention the company's visible service mix and ask how intake is routed today.",
@@ -110,6 +111,7 @@ export const sampleLeads: Lead[] = [
     contact: {
       name: 'Clinic Manager / Owner Dentist',
       title: 'Likely decision maker',
+      email: 'manager@example.com',
       summary: 'Keep outreach focused on public clinic operations, patient experience, and scheduling workflow.',
       conversationOpeners: ['Ask how new patient intake is handled today.', 'Reference public booking flow if visible.', 'Frame automation around staff time and patient experience.'],
       boundaries: ['Do not infer patient data.', 'Do not collect medical/private health information.', 'Use only public business-facing facts.'],
