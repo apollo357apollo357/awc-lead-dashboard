@@ -1,11 +1,13 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Building2, ExternalLink, Gauge, Mail, MapPin, MessageSquarePlus, Phone, ShieldCheck, Sparkles, Target, UserRound, Voicemail, Wrench } from 'lucide-react';
-import { sampleLeads } from './data/sampleLeads';
-import type { CallLog, Lead } from './types';
+import { candidateBusinesses } from './data/candidateBusinesses';
+import type { CallLog, CandidateBusiness, Lead } from './types';
+import { buildLeadProfileFromCandidate } from './lib/osint';
 import { calculatePriorityScore, countWeeklyConversations, createVoicemailScript, gradeLead, summarizeLeadForCall } from './lib/leadScoring';
 import './styles.css';
 
 const CALL_LOG_STORAGE_KEY = 'awc-lead-call-logs-v1';
+const OSINT_STORAGE_KEY = 'awc-lead-osint-profile-ids-v1';
 const WEEKLY_CONVERSATION_GOAL = 5;
 const scoreLabel = (lead: Lead) => `${gradeLead(lead)} / ${calculatePriorityScore(lead)}`;
 
@@ -15,6 +17,17 @@ const loadCallLogs = (): CallLog[] => {
   try {
     const raw = window.localStorage.getItem(CALL_LOG_STORAGE_KEY);
     return raw ? JSON.parse(raw) as CallLog[] : [];
+  } catch {
+    return [];
+  }
+};
+
+const loadOsintProfileIds = (): string[] => {
+  if (typeof window === 'undefined') return [];
+
+  try {
+    const raw = window.localStorage.getItem(OSINT_STORAGE_KEY);
+    return raw ? JSON.parse(raw) as string[] : [];
   } catch {
     return [];
   }
@@ -172,6 +185,53 @@ function CallActivity({ lead, logs, onAddLog }: { lead: Lead; logs: CallLog[]; o
   );
 }
 
+function CandidateProfile({ candidate, onRunOsint }: { candidate: CandidateBusiness; onRunOsint: (id: string) => void }) {
+  return (
+    <main className="lead-detail">
+      <section className="hero-card">
+        <div>
+          <p className="eyebrow">Real candidate seed profile</p>
+          <h1>{candidate.companyName}</h1>
+          <p className="summary">This is a real public business candidate from OpenStreetMap seed data. Click OSINT to generate the AWC workflow-intelligence profile for this specific company.</p>
+          <div className="meta-row">
+            <span><Building2 size={16} /> {candidate.category.replace(/_/g, ' ')}</span>
+            <span><MapPin size={16} /> {candidate.location}</span>
+            {candidate.phone ? <span><Phone size={16} /> {candidate.phone}</span> : null}
+            {candidate.email ? <span><Mail size={16} /> {candidate.email}</span> : null}
+          </div>
+        </div>
+        <button className="osint-button primary" onClick={() => onRunOsint(candidate.id)}>Run OSINT</button>
+      </section>
+
+      <section className="grid two">
+        <section className="card">
+          <h3>Seed data captured</h3>
+          <ul>
+            <li><strong>Address:</strong> {candidate.address || 'Not captured'}</li>
+            <li><strong>Website:</strong> {candidate.website || 'Not captured'}</li>
+            <li><strong>Phone:</strong> {candidate.phone || 'Not captured'}</li>
+            <li><strong>Email:</strong> {candidate.email || 'Not captured'}</li>
+          </ul>
+        </section>
+        <section className="card">
+          <h3>How search works</h3>
+          <ul>
+            <li>Search filters the scraped backend candidate list by company, location, category, website, phone, and email.</li>
+            <li>Every row has a stable profile ID, so notes and OSINT stay attached to that business.</li>
+            <li>The OSINT button converts only that business into a full outreach profile.</li>
+          </ul>
+        </section>
+      </section>
+
+      <section className="card callprep">
+        <h3><ShieldCheck size={18} /> Data boundary</h3>
+        <p>No example leads are loaded. This seed list is real public candidate data; generated OSINT fields are labeled as hypotheses until verified by source links or a conversation.</p>
+        <a href={candidate.sourceUrl} target="_blank" rel="noreferrer">Open source record <ExternalLink size={14} /></a>
+      </section>
+    </main>
+  );
+}
+
 function LeadDetail({ lead, logs, onAddLog }: { lead: Lead; logs: CallLog[]; onAddLog: (log: CallLog) => void }) {
   return (
     <main className="lead-detail">
@@ -254,27 +314,41 @@ function LeadDetail({ lead, logs, onAddLog }: { lead: Lead; logs: CallLog[]; onA
 
 export default function App() {
   const [query, setQuery] = useState('');
-  const [selectedNiche, setSelectedNiche] = useState('All niches');
-  const [selectedId, setSelectedId] = useState(sampleLeads[0].id);
+  const [selectedNiche, setSelectedNiche] = useState('All categories');
+  const [selectedId, setSelectedId] = useState(candidateBusinesses[0].id);
   const [callLogs, setCallLogs] = useState<CallLog[]>(loadCallLogs);
+  const [osintProfileIds, setOsintProfileIds] = useState<string[]>(loadOsintProfileIds);
 
   useEffect(() => {
     window.localStorage.setItem(CALL_LOG_STORAGE_KEY, JSON.stringify(callLogs));
   }, [callLogs]);
 
-  const niches = useMemo(() => ['All niches', ...Array.from(new Set(sampleLeads.flatMap((lead) => lead.niches))).sort()], []);
+  useEffect(() => {
+    window.localStorage.setItem(OSINT_STORAGE_KEY, JSON.stringify(osintProfileIds));
+  }, [osintProfileIds]);
+
+  const osintIdSet = useMemo(() => new Set(osintProfileIds), [osintProfileIds]);
+  const leadProfiles = useMemo(() => new Map(candidateBusinesses.filter((candidate) => osintIdSet.has(candidate.id)).map((candidate) => [candidate.id, buildLeadProfileFromCandidate(candidate)])), [osintIdSet]);
+  const categories = useMemo(() => ['All categories', ...Array.from(new Set(candidateBusinesses.map((candidate) => candidate.category.replace(/_/g, ' ')))).sort()], []);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
-    return sampleLeads.filter((lead) => {
-      const matchesNiche = selectedNiche === 'All niches' || lead.niches.includes(selectedNiche);
-      const haystack = [lead.companyName, lead.industry, lead.location, lead.status, lead.contact.email ?? '', ...lead.niches].join(' ').toLowerCase();
-      return matchesNiche && (!q || haystack.includes(q));
+    return candidateBusinesses.filter((candidate) => {
+      const categoryLabel = candidate.category.replace(/_/g, ' ');
+      const matchesCategory = selectedNiche === 'All categories' || categoryLabel === selectedNiche;
+      const haystack = [candidate.companyName, candidate.category, categoryLabel, candidate.location, candidate.address ?? '', candidate.website ?? '', candidate.phone ?? '', candidate.email ?? ''].join(' ').toLowerCase();
+      return matchesCategory && (!q || haystack.includes(q));
     });
   }, [query, selectedNiche]);
 
-  const selected = filtered.find((lead) => lead.id === selectedId) ?? filtered[0] ?? sampleLeads[0];
-  const selectedLogs = callLogs.filter((log) => log.leadId === selected.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const selectedCandidate = filtered.find((candidate) => candidate.id === selectedId) ?? filtered[0] ?? candidateBusinesses[0];
+  const selected = leadProfiles.get(selectedCandidate.id);
+  const selectedLogs = selected ? callLogs.filter((log) => log.leadId === selected.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt)) : [];
+
+  const runOsint = (id: string) => {
+    setOsintProfileIds((current) => current.includes(id) ? current : [...current, id]);
+    setSelectedId(id);
+  };
 
   return (
     <div className="app-shell">
@@ -283,26 +357,33 @@ export default function App() {
           <Wrench />
           <div>
             <strong>AWC Leads</strong>
-            <span>Outbound OSINT + inbound fuel</span>
+            <span>Real local candidates + OSINT profiles</span>
           </div>
         </div>
         <WeeklyMetrics logs={callLogs} />
-        <label className="filter-label" htmlFor="lead-search">Search by company, niche, location, status, email</label>
-        <input id="lead-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Try HVAC, dental, field service…" />
-        <label className="filter-label" htmlFor="niche-filter">Niche</label>
+        <section className="metric-card">
+          <span>Candidate backend</span>
+          <strong>{candidateBusinesses.length}</strong>
+          <p>{osintProfileIds.length} OSINT profile{osintProfileIds.length === 1 ? '' : 's'} generated.</p>
+          <small>Seeded from real public business records. No example data.</small>
+        </section>
+        <label className="filter-label" htmlFor="lead-search">Search by company, category, location, website, phone, email</label>
+        <input id="lead-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Try roofing, dental, Spruce Grove…" />
+        <label className="filter-label" htmlFor="niche-filter">Category</label>
         <select id="niche-filter" className="sidebar-select" value={selectedNiche} onChange={(event) => setSelectedNiche(event.target.value)}>
-          {niches.map((niche) => <option key={niche}>{niche}</option>)}
+          {categories.map((category) => <option key={category}>{category}</option>)}
         </select>
-        <div className="result-count">{filtered.length} lead{filtered.length === 1 ? '' : 's'} matched</div>
+        <div className="result-count">{filtered.length} candidate{filtered.length === 1 ? '' : 's'} matched</div>
         <div className="lead-list">
-          {filtered.map((lead) => {
-            const logCount = callLogs.filter((log) => log.leadId === lead.id).length;
+          {filtered.map((candidate) => {
+            const lead = leadProfiles.get(candidate.id);
+            const logCount = callLogs.filter((log) => log.leadId === candidate.id).length;
             return (
-              <button key={lead.id} className={lead.id === selected.id ? 'active' : ''} onClick={() => setSelectedId(lead.id)}>
-                <strong>{lead.companyName}</strong>
-                <span>{lead.industry}</span>
-                <small>{scoreLabel(lead)} · {lead.status} · {lead.niches.slice(0, 2).join(', ')}</small>
-                {lead.contact.email ? <small>{lead.contact.email}</small> : null}
+              <button key={candidate.id} className={candidate.id === selectedCandidate.id ? 'active' : ''} onClick={() => setSelectedId(candidate.id)}>
+                <strong>{candidate.companyName}</strong>
+                <span>{candidate.category.replace(/_/g, ' ')} · {candidate.location}</span>
+                {lead ? <small>{scoreLabel(lead)} · OSINT generated · {lead.niches.slice(0, 2).join(', ')}</small> : <small>Seed profile · click OSINT to populate fields</small>}
+                {candidate.email ? <small>{candidate.email}</small> : null}
                 {logCount > 0 ? <em>{logCount} call note{logCount === 1 ? '' : 's'}</em> : null}
               </button>
             );
@@ -310,10 +391,14 @@ export default function App() {
         </div>
         <section className="ethics">
           <h2><ShieldCheck size={16} /> Guardrails</h2>
-          <p>Goal: five real conversations/week. Capture reservations, feedback, and friction for Kadwell's blogs, counter-articles, paid ads, and funnel updates.</p>
+          <p>Goal: five real conversations/week. Each OSINT profile stays tied to one real business seed record. Capture reservations, feedback, and friction for Kadwell's blogs, counter-articles, paid ads, and funnel updates.</p>
         </section>
       </aside>
-      <LeadDetail lead={selected} logs={selectedLogs} onAddLog={(log) => setCallLogs((current) => [log, ...current])} />
+      {selected ? (
+        <LeadDetail lead={selected} logs={selectedLogs} onAddLog={(log) => setCallLogs((current) => [log, ...current])} />
+      ) : (
+        <CandidateProfile candidate={selectedCandidate} onRunOsint={runOsint} />
+      )}
     </div>
   );
 }

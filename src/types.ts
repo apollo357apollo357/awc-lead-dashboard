@@ -36,6 +36,22 @@ export type CallLog = {
   emailSent?: boolean;
 };
 
+export type CandidateBusiness = {
+  id: string;
+  source: 'OpenStreetMap';
+  sourceUrl: string;
+  companyName: string;
+  category: string;
+  location: string;
+  address?: string;
+  website?: string;
+  phone?: string;
+  email?: string;
+  lat: number;
+  lon: number;
+  publicTags: Record<string, string>;
+};
+
 export type Lead = {
   id: string;
   companyName: string;
