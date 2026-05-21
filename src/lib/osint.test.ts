@@ -44,6 +44,14 @@ describe('real candidate OSINT profile builder', () => {
     expect(lead.websiteAudit.technicalNotes.join(' ')).toContain('Workflow profile generated');
   });
 
+  it('records Re-OSINT refresh metadata when provided', () => {
+    const lead = buildLeadProfileFromCandidate(candidate, { refreshedAt: '2026-05-21T12:00:00.000Z' });
+
+    expect(lead.osintRefreshedAt).toBe('2026-05-21T12:00:00.000Z');
+    expect(lead.websiteAudit.technicalNotes.join(' ')).toContain('Re-OSINT refreshed');
+    expect(lead.sources).toContainEqual(expect.objectContaining({ note: expect.stringContaining('Refreshed 2026-05-21T12:00:00.000Z') }));
+  });
+
   it('scores visible reachability from public phone, email, and website fields', () => {
     const richLead = buildLeadProfileFromCandidate({ ...candidate, email: 'info@example.com' });
     const sparseLead = buildLeadProfileFromCandidate({ ...candidate, website: '', phone: '', email: '' });

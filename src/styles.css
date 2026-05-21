@@ -32,8 +32,12 @@ h1 { font-size: clamp(2rem, 4vw, 4.5rem); line-height: .92; margin: 0 0 16px; le
 .niche-tags { margin-top: 12px; }
 .meta-row span, .niche-tags span { display: inline-flex; align-items: center; gap: 6px; background: #f0f2e8; border-radius: 999px; padding: 8px 12px; font-weight: 700; }
 .niche-tags span { background: #10120f; color: #d7ff3f; }
+.hero-actions { display: grid; gap: 10px; align-content: center; }
 .score-card { background: #d7ff3f; border-radius: 20px; padding: 20px; display: grid; align-content: center; gap: 6px; }
 .osint-button { border: none; border-radius: 20px; background: #10120f; color: #d7ff3f; padding: 18px 20px; font-size: 1rem; font-weight: 950; cursor: pointer; align-self: center; min-height: 120px; }
+.osint-button.refresh { min-height: auto; display: grid; gap: 6px; justify-items: center; background: #263018; }
+.osint-button.refresh small { color: #f5ffd2; font-weight: 700; line-height: 1.35; }
+.refresh-stamp { color: #69715e; font-weight: 800; text-align: center; }
 .osint-button.primary:hover { background: #263018; }
 .score-card span { text-transform: uppercase; font-weight: 900; letter-spacing: .1em; font-size: .75rem; }
 .score-card strong { font-size: 3rem; line-height: 1; }

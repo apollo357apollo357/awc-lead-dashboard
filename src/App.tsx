@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { Building2, ExternalLink, Gauge, Mail, MapPin, MessageSquarePlus, Phone, ShieldCheck, Sparkles, Target, UserRound, Voicemail, Wrench } from 'lucide-react';
+import { Building2, ExternalLink, Gauge, Mail, MapPin, MessageSquarePlus, Phone, RefreshCw, ShieldCheck, Sparkles, Target, UserRound, Voicemail, Wrench } from 'lucide-react';
 import { candidateBusinesses } from './data/candidateBusinesses';
 import type { CallLog, CandidateBusiness, Lead } from './types';
 import { buildLeadProfileFromCandidate } from './lib/osint';
@@ -8,8 +8,10 @@ import './styles.css';
 
 const CALL_LOG_STORAGE_KEY = 'awc-lead-call-logs-v1';
 const OSINT_STORAGE_KEY = 'awc-lead-osint-profile-ids-v1';
+const OSINT_REFRESH_STORAGE_KEY = 'awc-lead-osint-refresh-map-v1';
 const WEEKLY_CONVERSATION_GOAL = 5;
 const scoreLabel = (lead: Lead) => `${gradeLead(lead)} / ${calculatePriorityScore(lead)}`;
+type OsintRefreshMap = Record<string, string>;
 
 const loadCallLogs = (): CallLog[] => {
   if (typeof window === 'undefined') return [];
@@ -31,6 +33,22 @@ const loadOsintProfileIds = (): string[] => {
   } catch {
     return [];
   }
+};
+
+const loadOsintRefreshMap = (): OsintRefreshMap => {
+  if (typeof window === 'undefined') return {};
+
+  try {
+    const raw = window.localStorage.getItem(OSINT_REFRESH_STORAGE_KEY);
+    return raw ? JSON.parse(raw) as OsintRefreshMap : {};
+  } catch {
+    return {};
+  }
+};
+
+const formatRefreshTime = (value?: string) => {
+  if (!value) return 'Not refreshed yet';
+  return new Date(value).toLocaleString();
 };
 
 const startOfWeek = (date: Date) => {
@@ -232,7 +250,7 @@ function CandidateProfile({ candidate, onRunOsint }: { candidate: CandidateBusin
   );
 }
 
-function LeadDetail({ lead, logs, onAddLog }: { lead: Lead; logs: CallLog[]; onAddLog: (log: CallLog) => void }) {
+function LeadDetail({ lead, logs, onAddLog, onRefreshOsint }: { lead: Lead; logs: CallLog[]; onAddLog: (log: CallLog) => void; onRefreshOsint: (id: string) => void }) {
   return (
     <main className="lead-detail">
       <section className="hero-card">
@@ -250,10 +268,17 @@ function LeadDetail({ lead, logs, onAddLog }: { lead: Lead; logs: CallLog[]; onA
             {lead.niches.map((niche) => <span key={niche}>{niche}</span>)}
           </div>
         </div>
-        <div className="score-card">
-          <span>Priority</span>
-          <strong>{scoreLabel(lead)}</strong>
-          <small>Fit {lead.fitScore} · Pain {lead.painScore} · Reach {lead.reachabilityScore} · Value {lead.valueScore}</small>
+        <div className="hero-actions">
+          <div className="score-card">
+            <span>Priority</span>
+            <strong>{scoreLabel(lead)}</strong>
+            <small>Fit {lead.fitScore} · Pain {lead.painScore} · Reach {lead.reachabilityScore} · Value {lead.valueScore}</small>
+          </div>
+          <button className="osint-button refresh" onClick={() => onRefreshOsint(lead.id)}>
+            <RefreshCw size={18} /> Re-OSINT
+            <small>Refresh asks, buckets, scoring, and source notes.</small>
+          </button>
+          <small className="refresh-stamp">Last refreshed: {formatRefreshTime(lead.osintRefreshedAt)}</small>
         </div>
       </section>
 
@@ -318,6 +343,7 @@ export default function App() {
   const [selectedId, setSelectedId] = useState(candidateBusinesses[0].id);
   const [callLogs, setCallLogs] = useState<CallLog[]>(loadCallLogs);
   const [osintProfileIds, setOsintProfileIds] = useState<string[]>(loadOsintProfileIds);
+  const [osintRefreshMap, setOsintRefreshMap] = useState<OsintRefreshMap>(loadOsintRefreshMap);
 
   useEffect(() => {
     window.localStorage.setItem(CALL_LOG_STORAGE_KEY, JSON.stringify(callLogs));
@@ -327,8 +353,12 @@ export default function App() {
     window.localStorage.setItem(OSINT_STORAGE_KEY, JSON.stringify(osintProfileIds));
   }, [osintProfileIds]);
 
+  useEffect(() => {
+    window.localStorage.setItem(OSINT_REFRESH_STORAGE_KEY, JSON.stringify(osintRefreshMap));
+  }, [osintRefreshMap]);
+
   const osintIdSet = useMemo(() => new Set(osintProfileIds), [osintProfileIds]);
-  const leadProfiles = useMemo(() => new Map(candidateBusinesses.filter((candidate) => osintIdSet.has(candidate.id)).map((candidate) => [candidate.id, buildLeadProfileFromCandidate(candidate)])), [osintIdSet]);
+  const leadProfiles = useMemo(() => new Map(candidateBusinesses.filter((candidate) => osintIdSet.has(candidate.id)).map((candidate) => [candidate.id, buildLeadProfileFromCandidate(candidate, { refreshedAt: osintRefreshMap[candidate.id] })])), [osintIdSet, osintRefreshMap]);
   const categories = useMemo(() => ['All categories', ...Array.from(new Set(candidateBusinesses.map((candidate) => candidate.category.replace(/_/g, ' ')))).sort()], []);
 
   const filtered = useMemo(() => {
@@ -347,6 +377,12 @@ export default function App() {
 
   const runOsint = (id: string) => {
     setOsintProfileIds((current) => current.includes(id) ? current : [...current, id]);
+    setSelectedId(id);
+  };
+
+  const refreshOsint = (id: string) => {
+    setOsintProfileIds((current) => current.includes(id) ? current : [...current, id]);
+    setOsintRefreshMap((current) => ({ ...current, [id]: new Date().toISOString() }));
     setSelectedId(id);
   };
 
@@ -395,7 +431,7 @@ export default function App() {
         </section>
       </aside>
       {selected ? (
-        <LeadDetail lead={selected} logs={selectedLogs} onAddLog={(log) => setCallLogs((current) => [log, ...current])} />
+        <LeadDetail lead={selected} logs={selectedLogs} onAddLog={(log) => setCallLogs((current) => [log, ...current])} onRefreshOsint={refreshOsint} />
       ) : (
         <CandidateProfile candidate={selectedCandidate} onRunOsint={runOsint} />
       )}

@@ -74,6 +74,7 @@ export type Lead = {
   reachabilityScore: number;
   valueScore: number;
   priorityScore?: number;
+  osintRefreshedAt?: string;
   contact: ContactProfile;
   websiteAudit: WebsiteAudit;
   sources: EvidenceSource[];

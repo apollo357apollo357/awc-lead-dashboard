@@ -114,11 +114,16 @@ function buildSellingPoints(candidate: CandidateBusiness): string[] {
   ];
 }
 
-export function buildLeadProfileFromCandidate(candidate: CandidateBusiness): Lead {
+type BuildLeadProfileOptions = {
+  refreshedAt?: string;
+};
+
+export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, options: BuildLeadProfileOptions = {}): Lead {
   const website = normalizeCandidateWebsite(candidate.website);
   const industry = categoryLabel(candidate.category);
   const location = candidate.location || 'Edmonton region, AB';
   const hasDirectContact = Boolean(candidate.phone || candidate.email || website);
+  const refreshedNote = options.refreshedAt ? `Refreshed ${options.refreshedAt}` : undefined;
 
   return {
     id: candidate.id,
@@ -153,6 +158,7 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness): Lea
     painScore: scorePain(candidate),
     reachabilityScore: scoreReachability(candidate),
     valueScore: scoreValue(candidate),
+    osintRefreshedAt: options.refreshedAt,
     contact: {
       name: 'Business owner / operations lead',
       title: `Decision maker for ${candidate.companyName}`,
@@ -190,17 +196,18 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness): Lea
       ],
       technicalNotes: [
         'Workflow profile generated from public listing data and AWC outreach scoring.',
+        ...(options.refreshedAt ? [`Re-OSINT refreshed ${options.refreshedAt}; profile regenerated against the current AWC asks, buckets, and scoring architecture.`] : []),
         `Seed source: ${sourceIdForCandidate(candidate)}`,
         `Coordinates: ${candidate.lat}, ${candidate.lon}`
       ]
     },
     sources: [
-      { label: 'OpenStreetMap candidate record', url: candidate.sourceUrl, note: sourceIdForCandidate(candidate) },
-      ...(website ? [{ label: 'Company website', url: website, note: 'Captured from public listing.' }] : [])
+      { label: 'OpenStreetMap candidate record', url: candidate.sourceUrl, note: [sourceIdForCandidate(candidate), refreshedNote].filter(Boolean).join(' · ') },
+      ...(website ? [{ label: 'Company website', url: website, note: ['Captured from public listing.', refreshedNote].filter(Boolean).join(' · ') }] : [])
     ]
   };
 }
 
 export function buildLeadProfilesFromCandidates(candidates: CandidateBusiness[]): Lead[] {
-  return candidates.map(buildLeadProfileFromCandidate);
+  return candidates.map((candidate) => buildLeadProfileFromCandidate(candidate));
 }
