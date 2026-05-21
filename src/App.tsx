@@ -65,8 +65,8 @@ function SourceLinks({ lead }: { lead: Lead }) {
     <section className="card">
       <h3>Evidence sources</h3>
       <div className="sources">
-        {sources.map((source) => (
-          <a key={`${source.label}-${source.url}`} href={source.url} target="_blank" rel="noreferrer">
+        {sources.map((source, index) => (
+          <a key={`${source.label}-${source.url}-${index}`} href={source.url} target="_blank" rel="noreferrer">
             {source.label} <ExternalLink size={14} />
             {source.note ? <small>{source.note}</small> : null}
           </a>
