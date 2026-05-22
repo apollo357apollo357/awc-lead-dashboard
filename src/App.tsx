@@ -138,14 +138,14 @@ function HiringSignals({ lead }: { lead: Lead }) {
 
   return (
     <section className="card hiring-signals">
-      <h3><Target size={18} /> Hiring signals / job-post scraper</h3>
-      <p className="field-help">Use job posts as high-intent proof that the company is already budgeting for AI, automation, CRM, reporting, or ops systems help.</p>
+      <h3><Target size={18} /> Hiring signals / validation targets</h3>
+      <p className="field-help">Use captured job posts only as sourced evidence. Search links below are targets for manual/authorized validation, not proof by themselves.</p>
       <div className="signal-score">
         <strong>{lead.hiringSignalScore ?? 0}/100</strong>
-        <span>Hiring intent score</span>
+        <span>Captured hiring rubric score</span>
       </div>
       {signals.length === 0 ? (
-        <p className="empty-state">No captured automation/AI job posts yet. Use the scraper targets below to validate current openings before calling.</p>
+        <p className="empty-state">No captured automation/AI job posts yet. Use the validation targets below to check current openings before calling.</p>
       ) : null}
       {signals.map((signal) => (
         <article key={signal.id} className="job-signal">
@@ -246,7 +246,7 @@ function CandidateProfile({ candidate, onRunOsint }: { candidate: CandidateBusin
         <div>
           <p className="eyebrow">Real candidate seed profile</p>
           <h1>{candidate.companyName}</h1>
-          <p className="summary">This is a real public business candidate from OpenStreetMap seed data. Click OSINT to build the AWC workflow-intelligence profile for this specific company.</p>
+          <p className="summary">This is a real public business candidate from OpenStreetMap seed data. Generate a profile to create AWC call prep, but treat all inferred pain, contacts, reviews, and website behavior as unverified until recorded with evidence.</p>
           <div className="meta-row">
             <span><Building2 size={16} /> {candidate.category.replace(/_/g, ' ')}</span>
             <span><MapPin size={16} /> {candidate.location}</span>
@@ -254,7 +254,7 @@ function CandidateProfile({ candidate, onRunOsint }: { candidate: CandidateBusin
             {candidate.email ? <span><Mail size={16} /> {candidate.email}</span> : null}
           </div>
         </div>
-        <button className="osint-button primary" onClick={() => onRunOsint(candidate.id)}>Run OSINT</button>
+        <button className="osint-button primary" onClick={() => onRunOsint(candidate.id)}>Generate profile from real seed</button>
       </section>
 
       <section className="grid two">
@@ -270,19 +270,50 @@ function CandidateProfile({ candidate, onRunOsint }: { candidate: CandidateBusin
         <section className="card">
           <h3>How search works</h3>
           <ul>
-            <li>Search filters the scraped backend candidate list by company, location, category, website, phone, and email.</li>
-            <li>Every row has a stable profile ID, so notes and OSINT stay attached to that business.</li>
-            <li>The OSINT button converts only that business into a full outreach profile.</li>
+            <li>Search filters the real public candidate list by company, location, category, website, phone, and email.</li>
+            <li>Every row has a stable profile ID, so notes and generated profiles stay attached to that business.</li>
+            <li>Profile generation uses only captured fields and clearly labels what still needs live validation.</li>
           </ul>
         </section>
       </section>
 
       <section className="card callprep">
         <h3><ShieldCheck size={18} /> Source record</h3>
-        <p>This profile starts from a real public business record and becomes an AWC outreach profile for that company.</p>
+        <p>This profile starts from a real public business record. Generated call prep is not treated as verified evidence until source checks or call notes support it.</p>
         <a href={candidate.sourceUrl} target="_blank" rel="noreferrer">Open source record <ExternalLink size={14} /></a>
       </section>
     </main>
+  );
+}
+
+function AccountabilityPanel({ lead }: { lead: Lead }) {
+  return (
+    <section className="card accountability">
+      <h3><ShieldCheck size={18} /> Real-data accountability</h3>
+      <div className="accountability-grid">
+        <div>
+          <span>Data policy</span>
+          <strong>{lead.accountability.dataPolicy}</strong>
+        </div>
+        <div>
+          <span>Profile status</span>
+          <strong>{lead.accountability.profileStatus}</strong>
+        </div>
+        <div>
+          <span>Score status</span>
+          <strong>{lead.accountability.scoreStatus}</strong>
+        </div>
+        <div>
+          <span>Validation status</span>
+          <strong>{lead.accountability.validationStatus}</strong>
+        </div>
+      </div>
+      <div className="grid two accountability-lists">
+        <ListBlock title="Unknown until verified" items={lead.accountability.unknowns} />
+        <ListBlock title="Required validation before confident outreach" items={lead.accountability.requiredValidationSteps} />
+      </div>
+      <p className="field-help">If evidence is not in the source ledger or call notes, treat it as unverified. Do not reference guessed pain, contacts, reviews, or tools as facts.</p>
+    </section>
   );
 }
 
@@ -306,15 +337,15 @@ function LeadDetail({ lead, logs, onAddLog, onRefreshOsint }: { lead: Lead; logs
         </div>
         <div className="hero-actions">
           <div className="score-card">
-            <span>Priority</span>
+            <span>Priority rubric</span>
             <strong>{scoreLabel(lead)}</strong>
-            <small>Fit {lead.fitScore} · Pain {lead.painScore} · Reach {lead.reachabilityScore} · Value {lead.valueScore} · Hiring {lead.hiringSignalScore ?? 0}</small>
+            <small>Generated triage score, not verified pain: Fit {lead.fitScore} · Pain {lead.painScore} · Reach {lead.reachabilityScore} · Value {lead.valueScore} · Hiring {lead.hiringSignalScore ?? 0}</small>
           </div>
           <button className="osint-button refresh" onClick={() => onRefreshOsint(lead.id)}>
-            <RefreshCw size={18} /> Re-OSINT
-            <small>Refresh asks, buckets, scoring, and source notes.</small>
+            <RefreshCw size={18} /> Refresh profile
+            <small>Regenerate from stored real fields. Does not revalidate live sources.</small>
           </button>
-          <small className="refresh-stamp">Last refreshed: {formatRefreshTime(lead.osintRefreshedAt)}</small>
+          <small className="refresh-stamp">Last profile refresh: {formatRefreshTime(lead.osintRefreshedAt)}</small>
         </div>
       </section>
 
@@ -337,6 +368,8 @@ function LeadDetail({ lead, logs, onAddLog, onRefreshOsint }: { lead: Lead; logs
 
       <HiringSignals lead={lead} />
 
+      <AccountabilityPanel lead={lead} />
+
       <CallActivity lead={lead} logs={logs} onAddLog={onAddLog} />
 
       <section className="grid three">
@@ -351,7 +384,8 @@ function LeadDetail({ lead, logs, onAddLog, onRefreshOsint }: { lead: Lead; logs
       </section>
 
       <section className="card audit">
-        <h3><Gauge size={18} /> Quick website audit — grade {lead.websiteAudit.grade}</h3>
+        <h3><Gauge size={18} /> Website validation checklist — current grade {lead.websiteAudit.grade}</h3>
+        <p className="field-help">Grade is a provisional rubric output from captured fields. It becomes trustworthy only after the website/contact path is inspected and evidence is recorded.</p>
         <div className="grid four">
           <ListBlock title="Conversion issues" items={lead.websiteAudit.conversionIssues} />
           <ListBlock title="System signals" items={lead.websiteAudit.systemSignals} />
@@ -434,21 +468,21 @@ export default function App() {
           <Wrench />
           <div>
             <strong>AWC Leads</strong>
-            <span>Real local candidates + OSINT profiles</span>
+            <span>Real candidates + accountable profiles</span>
           </div>
         </div>
         <WeeklyMetrics logs={callLogs} />
         <section className="metric-card">
           <span>Candidate backend</span>
           <strong>{candidateBusinesses.length}</strong>
-          <p>{osintProfileIds.length} OSINT profile{osintProfileIds.length === 1 ? '' : 's'} generated.</p>
-          <small>Seeded from real public business records.</small>
+          <p>{osintProfileIds.length} generated profile{osintProfileIds.length === 1 ? '' : 's'}.</p>
+          <small>No synthetic/example leads. Seeded from real public business records; profile claims remain labeled until validated.</small>
         </section>
         <section className="metric-card">
           <span>Job-post signals</span>
           <strong>{candidateBusinesses.filter((candidate) => candidate.jobPostSignals?.length).length}</strong>
           <p>Automation/AI hiring matches captured from public job boards.</p>
-          <small>Canada Job Bank, Indeed, and authorized LinkedIn review targets are attached to every OSINT profile.</small>
+          <small>Search targets are attached for manual/authorized validation; do not treat uncaptured jobs as evidence.</small>
         </section>
         <label className="filter-label" htmlFor="lead-search">Search by company, category, location, website, phone, email</label>
         <input id="lead-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Try roofing, dental, Spruce Grove…" />
@@ -466,7 +500,7 @@ export default function App() {
               <button key={candidate.id} className={candidate.id === selectedCandidate.id ? 'active' : ''} onClick={() => setSelectedId(candidate.id)}>
                 <strong>{candidate.companyName}</strong>
                 <span>{candidate.category.replace(/_/g, ' ')} · {candidate.location}</span>
-                {lead ? <small>{scoreLabel(lead)} · OSINT generated · Hiring {lead.hiringSignalScore ?? 0} · {lead.niches.slice(0, 2).join(', ')}</small> : <small>{candidate.jobPostSignals?.length ? 'Hiring signal seed · ' : ''}Seed profile · click OSINT to populate fields</small>}
+                {lead ? <small>{scoreLabel(lead)} · generated profile · validation: {lead.accountability.validationStatus} · Hiring {lead.hiringSignalScore ?? 0} · {lead.niches.slice(0, 2).join(', ')}</small> : <small>{candidate.jobPostSignals?.length ? 'Hiring signal seed · ' : ''}Seed profile · generate profile from real fields</small>}
                 {candidate.email ? <small>{candidate.email}</small> : null}
                 {logCount > 0 ? <em>{logCount} call note{logCount === 1 ? '' : 's'}</em> : null}
               </button>
@@ -475,7 +509,7 @@ export default function App() {
         </div>
         <section className="ethics">
           <h2><ShieldCheck size={16} /> Guardrails</h2>
-          <p>Goal: five real conversations/week. Each OSINT profile stays tied to one real business seed record. Capture reservations, feedback, and friction for Kadwell's blogs, counter-articles, paid ads, and funnel updates.</p>
+          <p>Goal: five real conversations/week. No synthetic/example leads. Each generated profile stays tied to one real business seed record and must label unknowns until source checks or call notes support them. Capture reservations, feedback, and friction for Kadwell's blogs, counter-articles, paid ads, and funnel updates.</p>
         </section>
       </aside>
       {selected ? (

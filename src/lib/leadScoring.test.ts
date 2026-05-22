@@ -37,6 +37,15 @@ const baseLead: Lead = {
     quickWins: ['Add qualified intake form'],
     technicalNotes: ['Needs manual verification']
   },
+  accountability: {
+    dataPolicy: 'Real public data only; no synthetic, demo, or example lead data.',
+    profileStatus: 'Generated from seed record; not live-source revalidated yet.',
+    scoreStatus: 'AWC rubric score from captured fields, not a verified pain claim.',
+    validationStatus: 'Seed only',
+    sourceLedger: [{ label: 'Website', url: 'https://example.com' }],
+    unknowns: ['Live website CTA/form behavior has not been validated in this browser session.'],
+    requiredValidationSteps: ['Open and inspect the company website/contact path.']
+  },
   sources: [{ label: 'Website', url: 'https://example.com' }]
 };
 

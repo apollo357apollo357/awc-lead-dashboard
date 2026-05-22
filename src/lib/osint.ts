@@ -124,10 +124,16 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, opti
   const industry = categoryLabel(candidate.category);
   const location = candidate.location || 'Edmonton region, AB';
   const hasDirectContact = Boolean(candidate.phone || candidate.email || website);
-  const refreshedNote = options.refreshedAt ? `Refreshed ${options.refreshedAt}` : undefined;
+  const refreshedNote = options.refreshedAt ? `Profile refreshed ${options.refreshedAt}` : undefined;
   const hiringSignals = candidate.jobPostSignals ?? [];
   const hiringScore = scoreHiringSignals(hiringSignals);
   const hasHiringSignal = hiringSignals.length > 0;
+  const profileSources = [
+    { label: 'OpenStreetMap candidate record', url: candidate.sourceUrl, note: [sourceIdForCandidate(candidate), refreshedNote].filter(Boolean).join(' · ') },
+    ...(website ? [{ label: 'Company website', url: website, note: ['Captured from public listing; not live-validated by this profile refresh.', refreshedNote].filter(Boolean).join(' · ') }] : []),
+    ...hiringSignals.map((signal) => ({ label: `${signal.source} hiring signal`, url: signal.sourceUrl, note: `${signal.title}${signal.postedAt ? ` · Posted ${signal.postedAt}` : ''}` })),
+    ...buildJobSearchUrls(candidate.companyName, location)
+  ];
 
   return {
     id: candidate.id,
@@ -207,18 +213,33 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, opti
         'Capture one concrete public friction point before calling so the outreach feels specific.'
       ],
       technicalNotes: [
-        'Workflow profile generated from public listing data and AWC outreach scoring.',
-        ...(options.refreshedAt ? [`Re-OSINT refreshed ${options.refreshedAt}; profile regenerated against the current AWC asks, buckets, and scoring architecture.`] : []),
+        'Workflow profile generated from real public seed data and AWC outreach scoring. Scores are triage aids, not verified claims of pain.',
+        ...(options.refreshedAt ? [`Profile refreshed ${options.refreshedAt}; regenerated against the current AWC asks, buckets, and scoring architecture without live source revalidation.`] : []),
         `Seed source: ${sourceIdForCandidate(candidate)}`,
         `Coordinates: ${candidate.lat}, ${candidate.lon}`
       ]
     },
-    sources: [
-      { label: 'OpenStreetMap candidate record', url: candidate.sourceUrl, note: [sourceIdForCandidate(candidate), refreshedNote].filter(Boolean).join(' · ') },
-      ...(website ? [{ label: 'Company website', url: website, note: ['Captured from public listing.', refreshedNote].filter(Boolean).join(' · ') }] : []),
-      ...hiringSignals.map((signal) => ({ label: `${signal.source} hiring signal`, url: signal.sourceUrl, note: `${signal.title}${signal.postedAt ? ` · Posted ${signal.postedAt}` : ''}` })),
-      ...buildJobSearchUrls(candidate.companyName, location)
-    ]
+    accountability: {
+      dataPolicy: 'Real public data only; no synthetic, demo, or example lead data.',
+      profileStatus: 'Generated from seed record; not live-source revalidated yet.',
+      scoreStatus: 'AWC rubric score from captured fields, not a verified pain claim.',
+      validationStatus: 'Seed only',
+      lastProfileGeneratedAt: options.refreshedAt,
+      sourceLedger: profileSources.filter((source) => !['Canada Job Bank', 'Indeed', 'LinkedIn Jobs search'].includes(source.label)),
+      unknowns: [
+        'Live website CTA/form behavior has not been validated in this browser session.',
+        'Review language has not been captured or quoted yet.',
+        'Decision-maker identity is unknown until verified from a public source or call discovery.',
+        'Current tool stack, CRM, booking system, and automation maturity are unknown until direct website inspection or discovery.'
+      ],
+      requiredValidationSteps: [
+        'Open and inspect the company website/contact path.',
+        'Capture exact public review or customer-language evidence before referencing pain.',
+        'Confirm contact details before outreach.',
+        'Record any live-source findings with source URL, timestamp, and exact evidence text.'
+      ]
+    },
+    sources: profileSources
   };
 }
 

@@ -24,6 +24,18 @@ export type WebsiteAudit = {
   technicalNotes: string[];
 };
 
+export type AccountabilityProfile = {
+  dataPolicy: string;
+  profileStatus: string;
+  scoreStatus: string;
+  validationStatus: 'Seed only' | 'Partially validated' | 'Live validated';
+  lastProfileGeneratedAt?: string;
+  lastSourceValidatedAt?: string;
+  sourceLedger: EvidenceSource[];
+  unknowns: string[];
+  requiredValidationSteps: string[];
+};
+
 export type CallLog = {
   id: string;
   leadId: string;
@@ -93,5 +105,6 @@ export type Lead = {
   jobPostSignals?: JobPostSignal[];
   contact: ContactProfile;
   websiteAudit: WebsiteAudit;
+  accountability: AccountabilityProfile;
   sources: EvidenceSource[];
 };

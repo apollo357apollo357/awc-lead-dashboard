@@ -44,12 +44,31 @@ describe('real candidate OSINT profile builder', () => {
     expect(lead.websiteAudit.technicalNotes.join(' ')).toContain('Workflow profile generated');
   });
 
-  it('records Re-OSINT refresh metadata when provided', () => {
+  it('records profile refresh metadata when provided without implying live source revalidation', () => {
     const lead = buildLeadProfileFromCandidate(candidate, { refreshedAt: '2026-05-21T12:00:00.000Z' });
 
     expect(lead.osintRefreshedAt).toBe('2026-05-21T12:00:00.000Z');
-    expect(lead.websiteAudit.technicalNotes.join(' ')).toContain('Re-OSINT refreshed');
-    expect(lead.sources).toContainEqual(expect.objectContaining({ note: expect.stringContaining('Refreshed 2026-05-21T12:00:00.000Z') }));
+    expect(lead.websiteAudit.technicalNotes.join(' ')).toContain('Profile refreshed');
+    expect(lead.websiteAudit.technicalNotes.join(' ')).not.toContain('Re-OSINT refreshed');
+    expect(lead.sources).toContainEqual(expect.objectContaining({ note: expect.stringContaining('Profile refreshed 2026-05-21T12:00:00.000Z') }));
+  });
+
+  it('declares evidence limits, real-data policy, and required validation steps', () => {
+    const lead = buildLeadProfileFromCandidate(candidate);
+
+    expect(lead.accountability.dataPolicy).toBe('Real public data only; no synthetic, demo, or example lead data.');
+    expect(lead.accountability.profileStatus).toBe('Generated from seed record; not live-source revalidated yet.');
+    expect(lead.accountability.scoreStatus).toBe('AWC rubric score from captured fields, not a verified pain claim.');
+    expect(lead.accountability.unknowns).toEqual(expect.arrayContaining([
+      'Live website CTA/form behavior has not been validated in this browser session.',
+      'Review language has not been captured or quoted yet.',
+      'Decision-maker identity is unknown until verified from a public source or call discovery.'
+    ]));
+    expect(lead.accountability.requiredValidationSteps).toEqual(expect.arrayContaining([
+      'Open and inspect the company website/contact path.',
+      'Capture exact public review or customer-language evidence before referencing pain.',
+      'Confirm contact details before outreach.'
+    ]));
   });
 
   it('adds hiring-post signals to the lead profile and score buckets', () => {
