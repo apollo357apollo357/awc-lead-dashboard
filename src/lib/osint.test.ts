@@ -72,32 +72,32 @@ describe('real candidate OSINT profile builder', () => {
     ]));
   });
 
-  it('applies live website enrichment as validated evidence without inventing missing claims', () => {
-    const websiteEnrichment: AwcWebsiteEnrichment = {
-      candidateId: candidate.id,
-      companyName: candidate.companyName,
-      website: {
-        url: 'https://www.ryfan.ca',
-        title: 'Ryfan Industrial Electric',
-        description: 'Industrial electrical services in Alberta.'
-      },
-      contacts: {
-        emails: ['service@ryfan.ca'],
-        phones: ['+17805718000']
-      },
-      intakeChannels: ['phone', 'email', 'contact form'],
-      ctas: ['Request Service', 'Contact Us'],
-      forms: [{ action: '/contact', method: 'post', fields: ['name', 'email', 'phone', 'message'] }],
-      techStack: ['Google Tag Manager', 'WordPress'],
-      workflowSignals: ['Phone and form intake both exist; map whether they land in one follow-up workflow.'],
-      sources: [{
-        type: 'website',
-        url: 'https://www.ryfan.ca',
-        capturedAt: '2026-05-22T15:30:00.000Z',
-        fields: ['emails', 'phones', 'forms', 'ctas', 'techStack', 'workflowSignals']
-      }]
-    };
+  const websiteEnrichment: AwcWebsiteEnrichment = {
+    candidateId: candidate.id,
+    companyName: candidate.companyName,
+    website: {
+      url: 'https://www.ryfan.ca',
+      title: 'Ryfan Industrial Electric',
+      description: 'Industrial electrical services in Alberta.'
+    },
+    contacts: {
+      emails: ['service@ryfan.ca'],
+      phones: ['+178****8000']
+    },
+    intakeChannels: ['phone', 'email', 'contact form'],
+    ctas: ['Request Service', 'Contact Us'],
+    forms: [{ action: '/contact', method: 'post', fields: ['name', 'email', 'phone', 'message'] }],
+    techStack: ['Google Tag Manager', 'WordPress'],
+    workflowSignals: ['Phone and form intake both exist; map whether they land in one follow-up workflow.'],
+    sources: [{
+      type: 'website',
+      url: 'https://www.ryfan.ca',
+      capturedAt: '2026-05-22T15:30:00.000Z',
+      fields: ['emails', 'phones', 'forms', 'ctas', 'techStack', 'workflowSignals']
+    }]
+  };
 
+  it('applies live website enrichment as validated evidence without inventing missing claims', () => {
     const lead = buildLeadProfileFromCandidate(candidate, { websiteEnrichment });
 
     expect(lead.accountability.validationStatus).toBe('Partially validated');
@@ -114,6 +114,35 @@ describe('real candidate OSINT profile builder', () => {
     ]));
     expect(lead.websiteAudit.conversionIssues).toContain('Validated website has 1 form(s); inspect destination, routing, notification owner, and CRM capture.');
     expect(lead.contact.email).toBe('service@ryfan.ca');
+  });
+
+  it('builds a source validation queue with statuses for website, reviews, jobs, contact, and decision maker', () => {
+    const seedOnlyLead = buildLeadProfileFromCandidate(candidate);
+    const validatedLead = buildLeadProfileFromCandidate(candidate, { websiteEnrichment });
+    const hiringLead = buildLeadProfileFromCandidate({
+      ...candidate,
+      jobPostSignals: [{
+        id: 'ryfan-automation-job',
+        title: 'Automation and Systems Coordinator',
+        source: 'Canada Job Bank',
+        sourceUrl: 'https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=automation',
+        postedAt: '2026-05-20',
+        location: 'Spruce Grove, AB',
+        keywords: ['automation'],
+        tools: ['HubSpot'],
+        painSignals: ['manual reporting'],
+        awcAngle: 'Position AWC as a faster systems audit before a permanent hire.'
+      }]
+    });
+
+    expect(seedOnlyLead.accountability.validationQueue.map((item) => item.category)).toEqual([
+      'Website', 'Reviews', 'Jobs', 'Contact', 'Decision maker'
+    ]);
+    expect(seedOnlyLead.accountability.validationQueue.find((item) => item.category === 'Website')).toMatchObject({ status: 'not checked' });
+    expect(seedOnlyLead.accountability.validationQueue.find((item) => item.category === 'Reviews')).toMatchObject({ status: 'not checked' });
+    expect(validatedLead.accountability.validationQueue.find((item) => item.category === 'Website')).toMatchObject({ status: 'validated', evidenceCount: 1 });
+    expect(validatedLead.accountability.validationQueue.find((item) => item.category === 'Contact')).toMatchObject({ status: 'validated' });
+    expect(hiringLead.accountability.validationQueue.find((item) => item.category === 'Jobs')).toMatchObject({ status: 'validated', evidenceCount: 1 });
   });
 
   it('adds hiring-post signals to the lead profile and score buckets', () => {

@@ -322,6 +322,29 @@ function AccountabilityPanel({ lead }: { lead: Lead }) {
   );
 }
 
+function ValidationQueue({ lead }: { lead: Lead }) {
+  return (
+    <section className="card validation-queue">
+      <h3><ShieldCheck size={18} /> Source validation queue</h3>
+      <p className="field-help">Each category must move from not checked to validated or failed with source evidence before it becomes outreach proof.</p>
+      <div className="validation-grid">
+        {lead.accountability.validationQueue.map((item) => (
+          <article key={item.category} className={`validation-item ${item.status.replace(' ', '-')}`}>
+            <div>
+              <strong>{item.category}</strong>
+              <span>{item.status}</span>
+            </div>
+            <p>{item.note}</p>
+            <small>Evidence: {item.evidenceCount}{item.checkedAt ? ` · Checked ${item.checkedAt}` : ''}</small>
+            {item.sourceUrl ? <a href={item.sourceUrl} target="_blank" rel="noreferrer">Open source <ExternalLink size={14} /></a> : null}
+            <em>{item.nextStep}</em>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function LeadDetail({ lead, logs, onAddLog, onRefreshOsint }: { lead: Lead; logs: CallLog[]; onAddLog: (log: CallLog) => void; onRefreshOsint: (id: string) => void }) {
   return (
     <main className="lead-detail">
@@ -374,6 +397,8 @@ function LeadDetail({ lead, logs, onAddLog, onRefreshOsint }: { lead: Lead; logs
       <HiringSignals lead={lead} />
 
       <AccountabilityPanel lead={lead} />
+
+      <ValidationQueue lead={lead} />
 
       <CallActivity lead={lead} logs={logs} onAddLog={onAddLog} />
 

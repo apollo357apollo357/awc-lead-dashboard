@@ -43,6 +43,13 @@ const baseLead: Lead = {
     scoreStatus: 'AWC rubric score from captured fields, not a verified pain claim.',
     validationStatus: 'Seed only',
     sourceLedger: [{ label: 'Website', url: 'https://example.com' }],
+    validationQueue: [
+      { category: 'Website', status: 'not checked', evidenceCount: 0, nextStep: 'Open and inspect the company website/contact path.', sourceUrl: 'https://example.com' },
+      { category: 'Reviews', status: 'not checked', evidenceCount: 0, nextStep: 'Capture quoted review language.' },
+      { category: 'Jobs', status: 'not checked', evidenceCount: 0, nextStep: 'Check public job boards.' },
+      { category: 'Contact', status: 'not checked', evidenceCount: 0, nextStep: 'Validate contact details.' },
+      { category: 'Decision maker', status: 'not checked', evidenceCount: 0, nextStep: 'Verify the decision maker.' }
+    ],
     unknowns: ['Live website CTA/form behavior has not been validated in this browser session.'],
     requiredValidationSteps: ['Open and inspect the company website/contact path.']
   },

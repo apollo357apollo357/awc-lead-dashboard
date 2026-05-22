@@ -1,4 +1,4 @@
-import type { CandidateBusiness, EvidenceSource, Lead } from '../types';
+import type { CandidateBusiness, EvidenceSource, Lead, ValidationQueueItem } from '../types';
 import type { AwcWebsiteEnrichment } from './enrichment';
 import { buildJobSearchUrls, scoreHiringSignals, summarizeHiringSignals } from './hiringSignals';
 
@@ -162,6 +162,62 @@ function validatedWebsiteQuickWins(enrichment?: AwcWebsiteEnrichment): string[] 
   return wins;
 }
 
+function buildValidationQueue(input: {
+  candidate: CandidateBusiness;
+  websiteEnrichment?: AwcWebsiteEnrichment;
+  validatedWebsiteSource?: EvidenceSource;
+  hiringSignals: CandidateBusiness['jobPostSignals'];
+}): ValidationQueueItem[] {
+  const { candidate, websiteEnrichment, validatedWebsiteSource } = input;
+  const hiringSignals = input.hiringSignals ?? [];
+  const websiteSource = websiteEnrichment?.sources.find((source) => source.type === 'website');
+  const validatedContactCount = (websiteEnrichment?.contacts.emails.length ?? 0) + (websiteEnrichment?.contacts.phones.length ?? 0);
+
+  return [
+    {
+      category: 'Website',
+      status: websiteEnrichment ? 'validated' : 'not checked',
+      evidenceCount: validatedWebsiteSource ? 1 : 0,
+      sourceUrl: websiteEnrichment?.website.url ?? (normalizeCandidateWebsite(candidate.website) || undefined),
+      checkedAt: websiteSource?.capturedAt,
+      note: websiteEnrichment ? 'Live website fetch is compiled into the source ledger.' : 'Website/contact path has not been fetched and compiled yet.',
+      nextStep: websiteEnrichment ? 'Inspect the validated CTA/form path manually before referencing workflow behavior.' : 'Run live website enrichment or manually inspect the website/contact path.'
+    },
+    {
+      category: 'Reviews',
+      status: 'not checked',
+      evidenceCount: 0,
+      nextStep: 'Capture quoted review language about response time, scheduling, communication, or follow-up before referencing customer pain.',
+      note: 'No public review source has been validated or quoted in this profile yet.'
+    },
+    {
+      category: 'Jobs',
+      status: hiringSignals.length ? 'validated' : 'not checked',
+      evidenceCount: hiringSignals.length,
+      sourceUrl: hiringSignals[0]?.sourceUrl,
+      checkedAt: hiringSignals[0]?.postedAt,
+      nextStep: hiringSignals.length ? 'Confirm the opening is still current before using it as outreach context.' : 'Check Job Bank, Indeed, LinkedIn Jobs, and company careers for automation/operations hiring signals.',
+      note: hiringSignals.length ? `${hiringSignals.length} sourced hiring signal${hiringSignals.length === 1 ? '' : 's'} captured.` : 'No current job-post evidence captured yet.'
+    },
+    {
+      category: 'Contact',
+      status: validatedContactCount > 0 ? 'validated' : 'not checked',
+      evidenceCount: validatedContactCount,
+      sourceUrl: websiteEnrichment?.website.url,
+      checkedAt: websiteSource?.capturedAt,
+      nextStep: validatedContactCount > 0 ? 'Confirm the best phone/email route during outreach and record the result.' : 'Validate phone/email from the website, listing, or direct call before outreach.',
+      note: validatedContactCount > 0 ? 'Website fetch captured public contact channel(s).' : 'Seed contact fields may exist, but no live contact validation has been compiled.'
+    },
+    {
+      category: 'Decision maker',
+      status: 'not checked',
+      evidenceCount: 0,
+      nextStep: 'Verify owner/operator or operations lead from a public company page, LinkedIn, registry source, or call discovery.',
+      note: 'The current point of contact is a role placeholder, not a verified person.'
+    }
+  ];
+}
+
 export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, options: BuildLeadProfileOptions = {}): Lead {
   const website = normalizeCandidateWebsite(candidate.website);
   const industry = categoryLabel(candidate.category);
@@ -277,6 +333,7 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, opti
       lastProfileGeneratedAt: options.refreshedAt,
       lastSourceValidatedAt,
       sourceLedger: profileSources.filter((source) => !['Canada Job Bank', 'Indeed', 'LinkedIn Jobs search'].includes(source.label)),
+      validationQueue: buildValidationQueue({ candidate, websiteEnrichment, validatedWebsiteSource, hiringSignals }),
       unknowns: [
         ...(websiteEnrichment ? [] : ['Live website CTA/form behavior has not been validated in this browser session.']),
         'Review language has not been captured or quoted yet.',

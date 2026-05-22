@@ -24,6 +24,16 @@ export type WebsiteAudit = {
   technicalNotes: string[];
 };
 
+export type ValidationQueueItem = {
+  category: 'Website' | 'Reviews' | 'Jobs' | 'Contact' | 'Decision maker';
+  status: 'validated' | 'failed' | 'not checked';
+  evidenceCount: number;
+  nextStep: string;
+  sourceUrl?: string;
+  checkedAt?: string;
+  note?: string;
+};
+
 export type AccountabilityProfile = {
   dataPolicy: string;
   profileStatus: string;
@@ -32,6 +42,7 @@ export type AccountabilityProfile = {
   lastProfileGeneratedAt?: string;
   lastSourceValidatedAt?: string;
   sourceLedger: EvidenceSource[];
+  validationQueue: ValidationQueueItem[];
   unknowns: string[];
   requiredValidationSteps: string[];
 };
