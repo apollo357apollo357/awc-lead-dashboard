@@ -52,6 +52,31 @@ describe('real candidate OSINT profile builder', () => {
     expect(lead.sources).toContainEqual(expect.objectContaining({ note: expect.stringContaining('Refreshed 2026-05-21T12:00:00.000Z') }));
   });
 
+  it('adds hiring-post signals to the lead profile and score buckets', () => {
+    const lead = buildLeadProfileFromCandidate({
+      ...candidate,
+      jobPostSignals: [{
+        id: 'ryfan-automation-job',
+        title: 'Automation and Systems Coordinator',
+        source: 'Canada Job Bank',
+        sourceUrl: 'https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=automation',
+        postedAt: '2026-05-20',
+        location: 'Spruce Grove, AB',
+        keywords: ['automation', 'workflow', 'CRM', 'reporting'],
+        tools: ['HubSpot', 'Zapier'],
+        painSignals: ['manual reporting', 'CRM cleanup'],
+        awcAngle: 'Position AWC as a faster systems audit before a permanent hire.'
+      }]
+    });
+
+    expect(lead.jobPostSignals).toHaveLength(1);
+    expect(lead.hiringSignalScore).toBeGreaterThanOrEqual(80);
+    expect(lead.painScore).toBeGreaterThan(buildLeadProfileFromCandidate(candidate).painScore);
+    expect(lead.valueScore).toBeGreaterThan(buildLeadProfileFromCandidate(candidate).valueScore);
+    expect(lead.websiteAudit.systemSignals.join(' ')).toContain('automation and systems hiring intent');
+    expect(lead.discoveryQuestions.join(' ')).toContain('hiring for automation');
+  });
+
   it('scores visible reachability from public phone, email, and website fields', () => {
     const richLead = buildLeadProfileFromCandidate({ ...candidate, email: 'info@example.com' });
     const sparseLead = buildLeadProfileFromCandidate({ ...candidate, website: '', phone: '', email: '' });

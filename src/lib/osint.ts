@@ -1,4 +1,5 @@
 import type { CandidateBusiness, Lead } from '../types';
+import { buildJobSearchUrls, scoreHiringSignals, summarizeHiringSignals } from './hiringSignals';
 
 const categoryLabels: Record<string, string> = {
   accountant: 'Professional services',
@@ -124,6 +125,9 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, opti
   const location = candidate.location || 'Edmonton region, AB';
   const hasDirectContact = Boolean(candidate.phone || candidate.email || website);
   const refreshedNote = options.refreshedAt ? `Refreshed ${options.refreshedAt}` : undefined;
+  const hiringSignals = candidate.jobPostSignals ?? [];
+  const hiringScore = scoreHiringSignals(hiringSignals);
+  const hasHiringSignal = hiringSignals.length > 0;
 
   return {
     id: candidate.id,
@@ -139,7 +143,8 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, opti
     strengths: [
       candidate.website ? 'Has a public website to inspect for intake, CTA, form, and follow-up flow.' : 'Has a public business listing but no website captured in the seed data.',
       candidate.phone ? 'Public phone number is available for outbound calling.' : 'Phone number was not captured in the public seed record.',
-      candidate.email ? 'Public email is available for live follow-up.' : 'Public email is not captured in the seed record; use phone or website-first outreach.'
+      candidate.email ? 'Public email is available for live follow-up.' : 'Public email is not captured in the seed record; use phone or website-first outreach.',
+      ...(hasHiringSignal ? ['Public job-post language suggests active budget or headcount for AI, automation, CRM, reporting, or operations help.'] : [])
     ],
     weaknesses: [
       'Website/contact-page workflow still needs to be mapped before the call.',
@@ -149,16 +154,22 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, opti
     reviewSignals: [
       'Look for review mentions of response time, missed calls, scheduling, quoting, communication, reminders, or follow-up.',
       'Check whether public reviews mention staff being busy, booking delays, admin confusion, or unclear next steps.',
-      'Capture exact customer language for Kadwell content/funnel counter-articles.'
+      'Capture exact customer language for Kadwell content/funnel counter-articles.',
+      ...(hasHiringSignal ? ['Compare review/customer language against hiring-post pain language to validate whether the job role is masking a workflow/system problem.'] : [])
     ],
     sellingPoints: buildSellingPoints(candidate),
-    discoveryQuestions: buildDiscoveryQuestions(candidate),
+    discoveryQuestions: [
+      ...buildDiscoveryQuestions(candidate),
+      ...(hasHiringSignal ? ['I noticed you are hiring for automation and systems work — what are you hoping that role would fix first?'] : [])
+    ],
     firstCallAngle: `Lead with a practical workflow question around intake, follow-up, and handoffs for a ${industry.toLowerCase()} business in ${location}.`,
-    fitScore: scoreFit(candidate),
-    painScore: scorePain(candidate),
-    reachabilityScore: scoreReachability(candidate),
-    valueScore: scoreValue(candidate),
+    fitScore: Math.min(100, scoreFit(candidate) + hiringScore.fitBoost),
+    painScore: Math.min(100, scorePain(candidate) + hiringScore.painBoost),
+    reachabilityScore: Math.min(100, scoreReachability(candidate) + hiringScore.reachabilityBoost),
+    valueScore: Math.min(100, scoreValue(candidate) + hiringScore.valueBoost),
+    hiringSignalScore: hiringScore.total,
     osintRefreshedAt: options.refreshedAt,
+    jobPostSignals: hiringSignals,
     contact: {
       name: 'Business owner / operations lead',
       title: `Decision maker for ${candidate.companyName}`,
@@ -187,7 +198,8 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, opti
       systemSignals: [
         candidate.publicTags.opening_hours ? `Published hours suggest schedule-sensitive intake: ${candidate.publicTags.opening_hours}` : 'Operating hours not captured in seed record.',
         hasDirectContact ? 'Public contact channel exists; useful for outbound validation.' : 'No direct public contact channel captured yet.',
-        `${industry} businesses commonly need repeatable intake, scheduling, quoting, reminder, and follow-up systems.`
+        `${industry} businesses commonly need repeatable intake, scheduling, quoting, reminder, and follow-up systems.`,
+        ...(hasHiringSignal ? [`Job-post signal: automation and systems hiring intent detected. ${summarizeHiringSignals(hiringSignals)}`] : [])
       ],
       quickWins: [
         'Verify website CTA/contact form path and map what happens after submission.',
@@ -203,7 +215,9 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, opti
     },
     sources: [
       { label: 'OpenStreetMap candidate record', url: candidate.sourceUrl, note: [sourceIdForCandidate(candidate), refreshedNote].filter(Boolean).join(' · ') },
-      ...(website ? [{ label: 'Company website', url: website, note: ['Captured from public listing.', refreshedNote].filter(Boolean).join(' · ') }] : [])
+      ...(website ? [{ label: 'Company website', url: website, note: ['Captured from public listing.', refreshedNote].filter(Boolean).join(' · ') }] : []),
+      ...hiringSignals.map((signal) => ({ label: `${signal.source} hiring signal`, url: signal.sourceUrl, note: `${signal.title}${signal.postedAt ? ` · Posted ${signal.postedAt}` : ''}` })),
+      ...buildJobSearchUrls(candidate.companyName, location)
     ]
   };
 }

@@ -132,6 +132,42 @@ function VoicemailScript({ lead }: { lead: Lead }) {
   );
 }
 
+function HiringSignals({ lead }: { lead: Lead }) {
+  const jobSearchSources = lead.sources.filter((source) => ['Canada Job Bank', 'Indeed', 'LinkedIn Jobs search'].includes(source.label));
+  const signals = lead.jobPostSignals ?? [];
+
+  return (
+    <section className="card hiring-signals">
+      <h3><Target size={18} /> Hiring signals / job-post scraper</h3>
+      <p className="field-help">Use job posts as high-intent proof that the company is already budgeting for AI, automation, CRM, reporting, or ops systems help.</p>
+      <div className="signal-score">
+        <strong>{lead.hiringSignalScore ?? 0}/100</strong>
+        <span>Hiring intent score</span>
+      </div>
+      {signals.length === 0 ? (
+        <p className="empty-state">No captured automation/AI job posts yet. Use the scraper targets below to validate current openings before calling.</p>
+      ) : null}
+      {signals.map((signal) => (
+        <article key={signal.id} className="job-signal">
+          <a href={signal.sourceUrl} target="_blank" rel="noreferrer"><strong>{signal.title}</strong> <ExternalLink size={14} /></a>
+          <small>{signal.source}{signal.postedAt ? ` · ${signal.postedAt}` : ''} · {signal.location}</small>
+          <p>{signal.awcAngle}</p>
+          <p><b>Tools:</b> {signal.tools.length > 0 ? signal.tools.join(', ') : 'None captured yet'}</p>
+          <p><b>Pain language:</b> {signal.painSignals.length > 0 ? signal.painSignals.join('; ') : 'None captured yet'}</p>
+        </article>
+      ))}
+      <div className="sources compact">
+        {jobSearchSources.map((source) => (
+          <a key={`${source.label}-${source.url}`} href={source.url} target="_blank" rel="noreferrer">
+            {source.label} <ExternalLink size={14} />
+            {source.note ? <small>{source.note}</small> : null}
+          </a>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function CallActivity({ lead, logs, onAddLog }: { lead: Lead; logs: CallLog[]; onAddLog: (log: CallLog) => void }) {
   const [outcome, setOutcome] = useState<CallLog['outcome']>('Called');
   const [comment, setComment] = useState('');
@@ -272,7 +308,7 @@ function LeadDetail({ lead, logs, onAddLog, onRefreshOsint }: { lead: Lead; logs
           <div className="score-card">
             <span>Priority</span>
             <strong>{scoreLabel(lead)}</strong>
-            <small>Fit {lead.fitScore} · Pain {lead.painScore} · Reach {lead.reachabilityScore} · Value {lead.valueScore}</small>
+            <small>Fit {lead.fitScore} · Pain {lead.painScore} · Reach {lead.reachabilityScore} · Value {lead.valueScore} · Hiring {lead.hiringSignalScore ?? 0}</small>
           </div>
           <button className="osint-button refresh" onClick={() => onRefreshOsint(lead.id)}>
             <RefreshCw size={18} /> Re-OSINT
@@ -298,6 +334,8 @@ function LeadDetail({ lead, logs, onAddLog, onRefreshOsint }: { lead: Lead; logs
         <ContactActions lead={lead} />
         <VoicemailScript lead={lead} />
       </section>
+
+      <HiringSignals lead={lead} />
 
       <CallActivity lead={lead} logs={logs} onAddLog={onAddLog} />
 
@@ -340,6 +378,7 @@ function LeadDetail({ lead, logs, onAddLog, onRefreshOsint }: { lead: Lead; logs
 export default function App() {
   const [query, setQuery] = useState('');
   const [selectedNiche, setSelectedNiche] = useState('All categories');
+  const [hiringOnly, setHiringOnly] = useState(false);
   const [selectedId, setSelectedId] = useState(candidateBusinesses[0].id);
   const [callLogs, setCallLogs] = useState<CallLog[]>(loadCallLogs);
   const [osintProfileIds, setOsintProfileIds] = useState<string[]>(loadOsintProfileIds);
@@ -366,10 +405,12 @@ export default function App() {
     return candidateBusinesses.filter((candidate) => {
       const categoryLabel = candidate.category.replace(/_/g, ' ');
       const matchesCategory = selectedNiche === 'All categories' || categoryLabel === selectedNiche;
-      const haystack = [candidate.companyName, candidate.category, categoryLabel, candidate.location, candidate.address ?? '', candidate.website ?? '', candidate.phone ?? '', candidate.email ?? ''].join(' ').toLowerCase();
-      return matchesCategory && (!q || haystack.includes(q));
+      const jobTerms = candidate.jobPostSignals?.flatMap((signal) => [signal.title, signal.source, signal.location, ...signal.keywords, ...signal.tools, ...signal.painSignals, signal.awcAngle]) ?? [];
+      const matchesHiringSignal = !hiringOnly || Boolean(candidate.jobPostSignals?.length);
+      const haystack = [candidate.companyName, candidate.category, categoryLabel, candidate.location, candidate.address ?? '', candidate.website ?? '', candidate.phone ?? '', candidate.email ?? '', ...jobTerms].join(' ').toLowerCase();
+      return matchesCategory && matchesHiringSignal && (!q || haystack.includes(q));
     });
-  }, [query, selectedNiche]);
+  }, [query, selectedNiche, hiringOnly]);
 
   const selectedCandidate = filtered.find((candidate) => candidate.id === selectedId) ?? filtered[0] ?? candidateBusinesses[0];
   const selected = leadProfiles.get(selectedCandidate.id);
@@ -403,12 +444,19 @@ export default function App() {
           <p>{osintProfileIds.length} OSINT profile{osintProfileIds.length === 1 ? '' : 's'} generated.</p>
           <small>Seeded from real public business records.</small>
         </section>
+        <section className="metric-card">
+          <span>Job-post signals</span>
+          <strong>{candidateBusinesses.filter((candidate) => candidate.jobPostSignals?.length).length}</strong>
+          <p>Automation/AI hiring matches captured from public job boards.</p>
+          <small>Canada Job Bank, Indeed, and authorized LinkedIn review targets are attached to every OSINT profile.</small>
+        </section>
         <label className="filter-label" htmlFor="lead-search">Search by company, category, location, website, phone, email</label>
         <input id="lead-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Try roofing, dental, Spruce Grove…" />
         <label className="filter-label" htmlFor="niche-filter">Category</label>
         <select id="niche-filter" className="sidebar-select" value={selectedNiche} onChange={(event) => setSelectedNiche(event.target.value)}>
           {categories.map((category) => <option key={category}>{category}</option>)}
         </select>
+        <label className="checkbox-row sidebar-checkbox"><input type="checkbox" checked={hiringOnly} onChange={(event) => setHiringOnly(event.target.checked)} /> Automation/AI hiring signals only</label>
         <div className="result-count">{filtered.length} candidate{filtered.length === 1 ? '' : 's'} matched</div>
         <div className="lead-list">
           {filtered.map((candidate) => {
@@ -418,7 +466,7 @@ export default function App() {
               <button key={candidate.id} className={candidate.id === selectedCandidate.id ? 'active' : ''} onClick={() => setSelectedId(candidate.id)}>
                 <strong>{candidate.companyName}</strong>
                 <span>{candidate.category.replace(/_/g, ' ')} · {candidate.location}</span>
-                {lead ? <small>{scoreLabel(lead)} · OSINT generated · {lead.niches.slice(0, 2).join(', ')}</small> : <small>Seed profile · click OSINT to populate fields</small>}
+                {lead ? <small>{scoreLabel(lead)} · OSINT generated · Hiring {lead.hiringSignalScore ?? 0} · {lead.niches.slice(0, 2).join(', ')}</small> : <small>{candidate.jobPostSignals?.length ? 'Hiring signal seed · ' : ''}Seed profile · click OSINT to populate fields</small>}
                 {candidate.email ? <small>{candidate.email}</small> : null}
                 {logCount > 0 ? <em>{logCount} call note{logCount === 1 ? '' : 's'}</em> : null}
               </button>

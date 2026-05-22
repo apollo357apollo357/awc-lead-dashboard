@@ -36,6 +36,19 @@ export type CallLog = {
   emailSent?: boolean;
 };
 
+export type JobPostSignal = {
+  id: string;
+  title: string;
+  source: 'Canada Job Bank' | 'Indeed' | 'LinkedIn Jobs' | 'Company careers' | 'Manual source';
+  sourceUrl: string;
+  postedAt?: string;
+  location: string;
+  keywords: string[];
+  tools: string[];
+  painSignals: string[];
+  awcAngle: string;
+};
+
 export type CandidateBusiness = {
   id: string;
   source: 'OpenStreetMap';
@@ -50,6 +63,7 @@ export type CandidateBusiness = {
   lat: number;
   lon: number;
   publicTags: Record<string, string>;
+  jobPostSignals?: JobPostSignal[];
 };
 
 export type Lead = {
@@ -74,7 +88,9 @@ export type Lead = {
   reachabilityScore: number;
   valueScore: number;
   priorityScore?: number;
+  hiringSignalScore?: number;
   osintRefreshedAt?: string;
+  jobPostSignals?: JobPostSignal[];
   contact: ContactProfile;
   websiteAudit: WebsiteAudit;
   sources: EvidenceSource[];
