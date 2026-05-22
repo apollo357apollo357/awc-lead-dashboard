@@ -172,6 +172,10 @@ function buildValidationQueue(input: {
   const hiringSignals = input.hiringSignals ?? [];
   const websiteSource = websiteEnrichment?.sources.find((source) => source.type === 'website');
   const validatedContactCount = (websiteEnrichment?.contacts.emails.length ?? 0) + (websiteEnrichment?.contacts.phones.length ?? 0);
+  const reviewEvidence = websiteEnrichment?.reviewEvidence ?? [];
+  const jobEvidence = websiteEnrichment?.jobEvidence ?? [];
+  const decisionMakerEvidence = websiteEnrichment?.decisionMakerEvidence ?? [];
+  const jobEvidenceCount = hiringSignals.length + jobEvidence.length;
 
   return [
     {
@@ -185,19 +189,21 @@ function buildValidationQueue(input: {
     },
     {
       category: 'Reviews',
-      status: 'not checked',
-      evidenceCount: 0,
-      nextStep: 'Capture quoted review language about response time, scheduling, communication, or follow-up before referencing customer pain.',
-      note: 'No public review source has been validated or quoted in this profile yet.'
+      status: reviewEvidence.length ? 'validated' : 'not checked',
+      evidenceCount: reviewEvidence.length,
+      sourceUrl: reviewEvidence[0]?.url,
+      checkedAt: websiteSource?.capturedAt,
+      nextStep: reviewEvidence.length ? 'Open review sources and capture exact customer language before referencing pain.' : 'Capture quoted review language about response time, scheduling, communication, or follow-up before referencing customer pain.',
+      note: reviewEvidence.length ? `${reviewEvidence.length} public review/testimonial source${reviewEvidence.length === 1 ? '' : 's'} linked from the website.` : 'No public review source has been validated or quoted in this profile yet.'
     },
     {
       category: 'Jobs',
-      status: hiringSignals.length ? 'validated' : 'not checked',
-      evidenceCount: hiringSignals.length,
-      sourceUrl: hiringSignals[0]?.sourceUrl,
-      checkedAt: hiringSignals[0]?.postedAt,
-      nextStep: hiringSignals.length ? 'Confirm the opening is still current before using it as outreach context.' : 'Check Job Bank, Indeed, LinkedIn Jobs, and company careers for automation/operations hiring signals.',
-      note: hiringSignals.length ? `${hiringSignals.length} sourced hiring signal${hiringSignals.length === 1 ? '' : 's'} captured.` : 'No current job-post evidence captured yet.'
+      status: jobEvidenceCount ? 'validated' : 'not checked',
+      evidenceCount: jobEvidenceCount,
+      sourceUrl: hiringSignals[0]?.sourceUrl ?? jobEvidence[0]?.url,
+      checkedAt: hiringSignals[0]?.postedAt ?? websiteSource?.capturedAt,
+      nextStep: jobEvidenceCount ? 'Confirm the opening or careers page is still current before using it as outreach context.' : 'Check Job Bank, Indeed, LinkedIn Jobs, and company careers for automation/operations hiring signals.',
+      note: jobEvidenceCount ? `${jobEvidenceCount} sourced hiring/careers signal${jobEvidenceCount === 1 ? '' : 's'} captured.` : 'No current job-post evidence captured yet.'
     },
     {
       category: 'Contact',
@@ -210,10 +216,12 @@ function buildValidationQueue(input: {
     },
     {
       category: 'Decision maker',
-      status: 'not checked',
-      evidenceCount: 0,
-      nextStep: 'Verify owner/operator or operations lead from a public company page, LinkedIn, registry source, or call discovery.',
-      note: 'The current point of contact is a role placeholder, not a verified person.'
+      status: decisionMakerEvidence.length ? 'validated' : 'not checked',
+      evidenceCount: decisionMakerEvidence.length,
+      sourceUrl: decisionMakerEvidence[0]?.sourceUrl,
+      checkedAt: websiteSource?.capturedAt,
+      nextStep: decisionMakerEvidence.length ? 'Verify role/currentness before personalized outreach.' : 'Verify owner/operator or operations lead from a public company page, LinkedIn, registry source, or call discovery.',
+      note: decisionMakerEvidence.length ? `${decisionMakerEvidence.length} public person/title candidate${decisionMakerEvidence.length === 1 ? '' : 's'} captured from website text.` : 'The current point of contact is a role placeholder, not a verified person.'
     }
   ];
 }
@@ -230,10 +238,28 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, opti
   const websiteEnrichment = options.websiteEnrichment?.candidateId === candidate.id ? options.websiteEnrichment : undefined;
   const validatedWebsiteSource = websiteEnrichment ? buildValidatedWebsiteSource(websiteEnrichment) : undefined;
   const lastSourceValidatedAt = websiteEnrichment?.sources[0]?.capturedAt;
+  const reviewEvidenceSources = (websiteEnrichment?.reviewEvidence ?? []).map((source) => ({
+    label: 'Validated review source',
+    url: source.url,
+    note: source.note ?? source.label
+  }));
+  const jobEvidenceSources = (websiteEnrichment?.jobEvidence ?? []).map((source) => ({
+    label: 'Validated careers/jobs source',
+    url: source.url,
+    note: source.note ?? source.label
+  }));
+  const decisionMakerEvidenceSources = (websiteEnrichment?.decisionMakerEvidence ?? []).map((source) => ({
+    label: 'Validated decision-maker source',
+    url: source.sourceUrl,
+    note: `${source.name} — ${source.title}${source.note ? ` · ${source.note}` : ''}`
+  }));
   const profileSources = [
     { label: 'OpenStreetMap candidate record', url: candidate.sourceUrl, note: [sourceIdForCandidate(candidate), refreshedNote].filter(Boolean).join(' · ') },
     ...(website ? [{ label: 'Company website', url: website, note: ['Captured from public listing; not live-validated by this profile refresh.', refreshedNote].filter(Boolean).join(' · ') }] : []),
     ...(validatedWebsiteSource ? [validatedWebsiteSource] : []),
+    ...reviewEvidenceSources,
+    ...jobEvidenceSources,
+    ...decisionMakerEvidenceSources,
     ...hiringSignals.map((signal) => ({ label: `${signal.source} hiring signal`, url: signal.sourceUrl, note: `${signal.title}${signal.postedAt ? ` · Posted ${signal.postedAt}` : ''}` })),
     ...buildJobSearchUrls(candidate.companyName, location)
   ];

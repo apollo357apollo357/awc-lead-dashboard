@@ -94,7 +94,10 @@ describe('real candidate OSINT profile builder', () => {
       url: 'https://www.ryfan.ca',
       capturedAt: '2026-05-22T15:30:00.000Z',
       fields: ['emails', 'phones', 'forms', 'ctas', 'techStack', 'workflowSignals']
-    }]
+    }],
+    reviewEvidence: [{ label: 'Reviews', url: 'https://www.ryfan.ca/reviews', note: 'Review/testimonial page linked from website.' }],
+    jobEvidence: [{ label: 'Careers', url: 'https://www.ryfan.ca/careers', note: 'Careers page linked from website.' }],
+    decisionMakerEvidence: [{ name: 'Jane Smith', title: 'Operations Manager', sourceUrl: 'https://www.ryfan.ca/about', note: 'Public team page mention.' }]
   };
 
   it('applies live website enrichment as validated evidence without inventing missing claims', () => {
@@ -142,6 +145,14 @@ describe('real candidate OSINT profile builder', () => {
     expect(seedOnlyLead.accountability.validationQueue.find((item) => item.category === 'Reviews')).toMatchObject({ status: 'not checked' });
     expect(validatedLead.accountability.validationQueue.find((item) => item.category === 'Website')).toMatchObject({ status: 'validated', evidenceCount: 1 });
     expect(validatedLead.accountability.validationQueue.find((item) => item.category === 'Contact')).toMatchObject({ status: 'validated' });
+    expect(validatedLead.accountability.validationQueue.find((item) => item.category === 'Reviews')).toMatchObject({ status: 'validated', evidenceCount: 1 });
+    expect(validatedLead.accountability.validationQueue.find((item) => item.category === 'Jobs')).toMatchObject({ status: 'validated', evidenceCount: 1 });
+    expect(validatedLead.accountability.validationQueue.find((item) => item.category === 'Decision maker')).toMatchObject({ status: 'validated', evidenceCount: 1 });
+    expect(validatedLead.accountability.sourceLedger).toEqual(expect.arrayContaining([
+      expect.objectContaining({ label: 'Validated review source', url: 'https://www.ryfan.ca/reviews' }),
+      expect.objectContaining({ label: 'Validated careers/jobs source', url: 'https://www.ryfan.ca/careers' }),
+      expect.objectContaining({ label: 'Validated decision-maker source', url: 'https://www.ryfan.ca/about' })
+    ]));
     expect(hiringLead.accountability.validationQueue.find((item) => item.category === 'Jobs')).toMatchObject({ status: 'validated', evidenceCount: 1 });
   });
 

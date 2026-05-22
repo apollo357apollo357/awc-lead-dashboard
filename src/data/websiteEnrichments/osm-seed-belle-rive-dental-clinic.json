@@ -1,0 +1,149 @@
+{
+  "candidateId": "osm-seed-belle-rive-dental-clinic",
+  "companyName": "Belle Rive Dental Clinic",
+  "website": {
+    "url": "https://www.bellerivedental.ca/",
+    "title": "Dentist Edmonton | Dentist Near Me | Belle Rive Dental Clinic",
+    "description": "Looking for a dentist in Edmonton? Belle Rive Dental Clinic in Edmonton offers affordable, high-quality cosmetic, emergency & family dentistry. Visit a dentist near you today!"
+  },
+  "contacts": {
+    "emails": [],
+    "phones": [
+      "7804734867",
+      "5874013950",
+      "+17804734867",
+      "5873302083"
+    ]
+  },
+  "intakeChannels": [
+    "phone",
+    "contact form",
+    "booking link"
+  ],
+  "ctas": [
+    "Facebook-f",
+    "Contact",
+    "request appointment",
+    "Request Appointment"
+  ],
+  "forms": [
+    {
+      "action": "/#wpcf7-f1310-p12-o1",
+      "method": "post",
+      "fields": [
+        "_wpcf7",
+        "_wpcf7_version",
+        "_wpcf7_locale",
+        "_wpcf7_unit_tag",
+        "_wpcf7_container_post",
+        "_wpcf7_posted_data_hash",
+        "_wpcf7_recaptcha_response",
+        "f-name",
+        "f-email",
+        "f-phone",
+        "f-date",
+        "f-time",
+        "f-patient",
+        "f-message",
+        "current-page-url",
+        "previous-page-url"
+      ]
+    },
+    {
+      "action": "/#wpcf7-f1309-o2",
+      "method": "post",
+      "fields": [
+        "_wpcf7",
+        "_wpcf7_version",
+        "_wpcf7_locale",
+        "_wpcf7_unit_tag",
+        "_wpcf7_container_post",
+        "_wpcf7_posted_data_hash",
+        "_wpcf7_recaptcha_response",
+        "f-name",
+        "f-email",
+        "f-phone",
+        "f-date",
+        "f-time",
+        "f-patient",
+        "f-message",
+        "current-page-url",
+        "previous-page-url"
+      ]
+    },
+    {
+      "action": "/#wpcf7-f1309-o3",
+      "method": "post",
+      "fields": [
+        "_wpcf7",
+        "_wpcf7_version",
+        "_wpcf7_locale",
+        "_wpcf7_unit_tag",
+        "_wpcf7_container_post",
+        "_wpcf7_posted_data_hash",
+        "_wpcf7_recaptcha_response",
+        "f-name",
+        "f-email",
+        "f-phone",
+        "f-date",
+        "f-time",
+        "f-patient",
+        "f-message",
+        "current-page-url",
+        "previous-page-url"
+      ]
+    }
+  ],
+  "techStack": [
+    "Google Tag Manager",
+    "Google Analytics",
+    "WordPress"
+  ],
+  "workflowSignals": [
+    "Public form captures phone/email fields for follow-up routing.",
+    "Booking link exists; map whether booked appointments sync with follow-up reminders.",
+    "Phone and form intake both exist; map whether they land in one follow-up workflow.",
+    "Analytics/tooling is present alongside forms; map whether lead events are tracked through follow-up."
+  ],
+  "reviewEvidence": [
+    {
+      "label": "Google",
+      "url": "https://www.google.com/maps?cid=13349141357449783357",
+      "note": "Review/testimonial source linked from public website."
+    },
+    {
+      "label": "Google",
+      "url": "https://www.google.com/maps/place/Belle+Rive+Dental+Clinic/@53.6211145,-113.4695799,17z/data=!3m1!4b1!4m5!3m4!1s0x53a024b3dd57ae77:0xb941ad567b45283d!8m2!3d53.6211145!4d-113.4695799",
+      "note": "Review/testimonial source linked from public website."
+    },
+    {
+      "label": "Writer a Review",
+      "url": "https://search.google.com/local/writereview?placeid=ChIJd65X3bMkoFMRPShFe1atQbk",
+      "note": "Review/testimonial source linked from public website."
+    }
+  ],
+  "jobEvidence": [
+    {
+      "label": "Careers",
+      "url": "https://passiondental.ca/dental-professional/about-us/careers-that-make-you-smile",
+      "note": "Careers/jobs source linked from public website."
+    }
+  ],
+  "decisionMakerEvidence": [],
+  "sources": [
+    {
+      "type": "website",
+      "url": "https://www.bellerivedental.ca/",
+      "capturedAt": "2026-05-22T16:47:37.334Z",
+      "fields": [
+        "phones",
+        "forms",
+        "ctas",
+        "techStack",
+        "workflowSignals",
+        "reviewEvidence",
+        "jobEvidence"
+      ]
+    }
+  ]
+}

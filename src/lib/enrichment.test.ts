@@ -17,6 +17,10 @@ const html = `
     <main>
       <a class="button" href="/quote">Request a Quote</a>
       <a href="https://calendly.com/example-roofing/inspection">Book Inspection</a>
+      <a href="/reviews">Customer Reviews</a>
+      <a href="https://maps.google.com/?cid=123">Google Reviews</a>
+      <a href="/careers">Careers</a>
+      <section class="team"><p>Jane Smith, Operations Manager</p></section>
       <form action="/contact" method="post">
         <input name="name" />
         <input name="phone" />
@@ -54,6 +58,16 @@ describe('AWC website enrichment extraction', () => {
       type: 'website',
       url: 'https://example-roofing.ca/',
       fields: expect.arrayContaining(['emails', 'phones', 'forms', 'ctas', 'techStack'])
+    }));
+    expect(result.reviewEvidence).toEqual(expect.arrayContaining([
+      expect.objectContaining({ label: 'Customer Reviews', url: 'https://example-roofing.ca/reviews' }),
+      expect.objectContaining({ label: 'Google Reviews', url: 'https://maps.google.com/?cid=123' })
+    ]));
+    expect(result.jobEvidence).toContainEqual(expect.objectContaining({ label: 'Careers', url: 'https://example-roofing.ca/careers' }));
+    expect(result.decisionMakerEvidence).toContainEqual(expect.objectContaining({
+      name: 'Jane Smith',
+      title: 'Operations Manager',
+      sourceUrl: 'https://example-roofing.ca/'
     }));
   });
 

@@ -1,0 +1,58 @@
+{
+  "candidateId": "osm-seed-ottewell-animal-clinic",
+  "companyName": "Ottewell Animal Clinic",
+  "website": {
+    "url": "https://ottewellanimalclinic.com/",
+    "title": "Veterinary Clinic | OttewellAnimalClinic.com",
+    "description": ""
+  },
+  "contacts": {
+    "emails": [
+      "info@ottewellanimalclinic.com",
+      "emailinfo@ottewellanimalclinic.com"
+    ],
+    "phones": [
+      "7804661826",
+      "7804690083"
+    ]
+  },
+  "intakeChannels": [
+    "phone",
+    "email"
+  ],
+  "ctas": [],
+  "forms": [],
+  "techStack": [],
+  "workflowSignals": [],
+  "reviewEvidence": [
+    {
+      "label": "Find us on Google Maps",
+      "url": "https://goo.gl/maps/41hl4",
+      "note": "Review/testimonial source linked from public website."
+    },
+    {
+      "label": "A Google+ User? Review Here",
+      "url": "https://plus.google.com/u/0/+OttewellAnimalClinicEdmonton/posts?hl=en&review=1",
+      "note": "Review/testimonial source linked from public website."
+    },
+    {
+      "label": "Google+",
+      "url": "https://plus.google.com/u/1/+OttewellAnimalClinicEdmonton/posts",
+      "note": "Review/testimonial source linked from public website."
+    }
+  ],
+  "jobEvidence": [],
+  "decisionMakerEvidence": [],
+  "sources": [
+    {
+      "type": "website",
+      "url": "https://ottewellanimalclinic.com/",
+      "capturedAt": "2026-05-22T16:47:39.726Z",
+      "fields": [
+        "emails",
+        "phones",
+        "reviewEvidence"
+      ]
+    }
+  ]
+}

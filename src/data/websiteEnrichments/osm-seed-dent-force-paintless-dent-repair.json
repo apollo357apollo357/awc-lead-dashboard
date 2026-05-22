@@ -34,16 +34,68 @@
     "Booking link exists; map whether booked appointments sync with follow-up reminders.",
     "Quote-oriented CTA creates a natural conversation around lead qualification and quote follow-up."
   ],
+  "reviewEvidence": [
+    {
+      "label": "Testimonials",
+      "url": "https://dented.ca/our-guarantee/testimonials/",
+      "note": "Review/testimonial source linked from public website."
+    },
+    {
+      "label": "Brendan McGilton (AM1897)",
+      "url": "https://www.google.com/maps/contrib/117909427135513902109/reviews",
+      "note": "Review/testimonial source linked from public website."
+    },
+    {
+      "label": "Russell Gillis",
+      "url": "https://www.google.com/maps/contrib/106224692257289584194/reviews",
+      "note": "Review/testimonial source linked from public website."
+    },
+    {
+      "label": "Judy Obee",
+      "url": "https://www.google.com/maps/contrib/117636937223402264430/reviews",
+      "note": "Review/testimonial source linked from public website."
+    },
+    {
+      "label": "Kelly Martin",
+      "url": "https://www.google.com/maps/contrib/103371840351006614472/reviews",
+      "note": "Review/testimonial source linked from public website."
+    },
+    {
+      "label": "Jody Crowther",
+      "url": "https://www.google.com/maps/contrib/100740749841967002501/reviews",
+      "note": "Review/testimonial source linked from public website."
+    },
+    {
+      "label": "Ivan",
+      "url": "https://www.google.com/maps/contrib/102276354738563846814/reviews",
+      "note": "Review/testimonial source linked from public website."
+    },
+    {
+      "label": "Jordan Simmons",
+      "url": "https://www.google.com/maps/contrib/114122866928333051590/reviews",
+      "note": "Review/testimonial source linked from public website."
+    }
+  ],
+  "jobEvidence": [
+    {
+      "label": "Careers",
+      "url": "https://dented.ca/about/careers/",
+      "note": "Careers/jobs source linked from public website."
+    }
+  ],
+  "decisionMakerEvidence": [],
   "sources": [
     {
       "type": "website",
       "url": "https://dentforce.ca/dent-repair-edmonton/",
-      "capturedAt": "2026-05-22T15:26:58.486Z",
+      "capturedAt": "2026-05-22T16:47:32.173Z",
       "fields": [
         "phones",
         "ctas",
         "techStack",
-        "workflowSignals"
+        "workflowSignals",
+        "reviewEvidence",
+        "jobEvidence"
       ]
     }
   ]

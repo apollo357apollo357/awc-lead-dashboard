@@ -51,11 +51,14 @@
     "Phone and form intake both exist; map whether they land in one follow-up workflow.",
     "Analytics/tooling is present alongside forms; map whether lead events are tracked through follow-up."
   ],
+  "reviewEvidence": [],
+  "jobEvidence": [],
+  "decisionMakerEvidence": [],
   "sources": [
     {
       "type": "website",
       "url": "https://www.garage-repairs-edmonton.ca/",
-      "capturedAt": "2026-05-22T15:26:59.232Z",
+      "capturedAt": "2026-05-22T16:47:32.804Z",
       "fields": [
         "phones",
         "forms",

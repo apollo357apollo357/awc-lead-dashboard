@@ -85,17 +85,32 @@
     "Phone and form intake both exist; map whether they land in one follow-up workflow.",
     "Analytics/tooling is present alongside forms; map whether lead events are tracked through follow-up."
   ],
+  "reviewEvidence": [
+    {
+      "label": "Manchester Dental 10708 120 St NW, Edmonton, AB T5H 0W7, Canada",
+      "url": "https://www.google.com/maps?cid=13026259946188655667",
+      "note": "Review/testimonial source linked from public website."
+    },
+    {
+      "label": "10708 120 St NW, Edmonton, AB T5H 0W7, Canada",
+      "url": "https://www.google.com/maps/place/Manchester+Dental/@53.5513349,-113.529542,17z/data=!3m2!4b1!5s0x53a023b0682a771b:0xad0170a73da461cc!4m6!3m5!1s0x53a023bacbfecadf:0xb4c69267ac794c33!8m2!3d53.5513349!4d-113.529542!16s%2Fg%2F1tczk4q8?entry=ttu",
+      "note": "Review/testimonial source linked from public website."
+    }
+  ],
+  "jobEvidence": [],
+  "decisionMakerEvidence": [],
   "sources": [
     {
       "type": "website",
       "url": "https://www.edmontondental.ca/",
-      "capturedAt": "2026-05-22T15:27:04.492Z",
+      "capturedAt": "2026-05-22T16:47:36.118Z",
       "fields": [
         "phones",
         "forms",
         "ctas",
         "techStack",
-        "workflowSignals"
+        "workflowSignals",
+        "reviewEvidence"
       ]
     }
   ]

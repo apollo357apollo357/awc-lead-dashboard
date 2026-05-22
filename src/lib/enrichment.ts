@@ -14,6 +14,19 @@ export type SourceLedgerEntry = {
   fields: string[];
 };
 
+export type LinkedSourceEvidence = {
+  label: string;
+  url: string;
+  note?: string;
+};
+
+export type DecisionMakerEvidence = {
+  name: string;
+  title: string;
+  sourceUrl: string;
+  note?: string;
+};
+
 export type AwcWebsiteEnrichment = {
   candidateId: string;
   companyName: string;
@@ -31,6 +44,9 @@ export type AwcWebsiteEnrichment = {
   forms: WebsiteFormSignal[];
   techStack: string[];
   workflowSignals: string[];
+  reviewEvidence: LinkedSourceEvidence[];
+  jobEvidence: LinkedSourceEvidence[];
+  decisionMakerEvidence: DecisionMakerEvidence[];
   sources: SourceLedgerEntry[];
 };
 
@@ -55,6 +71,79 @@ function visibleText($: cheerio.CheerioAPI, element: AnyNode): string {
 
 function normalizePhone(raw: string): string {
   return raw.replace(/[()\s.-]/g, '').replace(/^1(?=\d{10}$)/, '+1');
+}
+
+function absoluteUrl(href: string, baseUrl: string): string {
+  try {
+    return new URL(href, baseUrl).toString();
+  } catch {
+    return href;
+  }
+}
+
+function compactLabel(value: string, fallback: string): string {
+  return value.replace(/\s+/g, ' ').trim() || fallback;
+}
+
+function linkedEvidenceFromAnchors($: cheerio.CheerioAPI, baseUrl: string, matcher: (text: string, href: string) => boolean, fallback: string, note: string): LinkedSourceEvidence[] {
+  const evidence: LinkedSourceEvidence[] = $('a[href]')
+    .map((_, element) => {
+      const href = $(element).attr('href') ?? '';
+      const text = visibleText($, element);
+      if (!matcher(text, href)) return undefined;
+      return {
+        label: compactLabel(text, fallback),
+        url: absoluteUrl(href, baseUrl),
+        note
+      };
+    })
+    .get()
+    .filter((item) => Boolean(item?.url)) as LinkedSourceEvidence[];
+
+  const seen = new Set<string>();
+  return evidence.filter((item) => {
+    if (seen.has(item.url)) return false;
+    seen.add(item.url);
+    return true;
+  }).slice(0, 8);
+}
+
+function extractDecisionMakerEvidence($: cheerio.CheerioAPI, baseUrl: string): DecisionMakerEvidence[] {
+  const titlePattern = '(Owner|Founder|Co-Founder|President|Partner|General Manager|Operations Manager|Office Manager|Clinic Manager|Practice Manager|Director(?: of [A-Z][A-Za-z ]{2,40})?)';
+  const patterns = [
+    new RegExp(`\\b([A-Z][a-z]+(?:\\s+[A-Z][a-z]+){1,2})\\s*[,–-]\\s*${titlePattern}\\b`, 'g'),
+    new RegExp(`\\b${titlePattern}\\s*[:–-]\\s*([A-Z][a-z]+(?:\\s+[A-Z][a-z]+){1,2})\\b`, 'g')
+  ];
+  const evidence: DecisionMakerEvidence[] = [];
+  const textBlocks = $('body h1, body h2, body h3, body h4, body p, body li, body figcaption, body article, body section')
+    .map((_, element) => visibleText($, element))
+    .get()
+    .filter((text) => text.length <= 180);
+
+  for (const text of textBlocks) {
+    for (const pattern of patterns) {
+      for (const match of text.matchAll(pattern)) {
+        const firstGroupIsTitle = /owner|founder|president|partner|manager|director/i.test(match[1] ?? '');
+        const name = firstGroupIsTitle ? match[2] : match[1];
+        const title = firstGroupIsTitle ? match[1] : match[2];
+        if (!name || !title) continue;
+        evidence.push({
+          name: name.trim(),
+          title: title.trim(),
+          sourceUrl: baseUrl,
+          note: 'Public website text includes this person/title; verify role before outreach.'
+        });
+      }
+    }
+  }
+
+  const seen = new Set<string>();
+  return evidence.filter((item) => {
+    const key = `${item.name}|${item.title}`.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).slice(0, 6);
 }
 
 function detectTechStack(html: string, linksAndScripts: string[]): string[] {
@@ -166,13 +255,31 @@ export function buildAwcEnrichmentFromWebsite(input: BuildWebsiteEnrichmentInput
   const techStack = detectTechStack(input.html, linksAndScripts);
   const intakeChannels = inferIntakeChannels(emails, phones, forms, linksAndScripts);
   const workflowSignals = buildWorkflowSignals({ forms, intakeChannels, ctas, techStack });
+  const reviewEvidence = linkedEvidenceFromAnchors(
+    $,
+    input.url,
+    (text, href) => /review|testimonial|rating|google/i.test(`${text} ${href}`),
+    'Review source',
+    'Review/testimonial source linked from public website.'
+  );
+  const jobEvidence = linkedEvidenceFromAnchors(
+    $,
+    input.url,
+    (text, href) => /career|job|employment|hiring|join.+team|work.+with.+us/i.test(`${text} ${href}`),
+    'Careers / jobs source',
+    'Careers/jobs source linked from public website.'
+  );
+  const decisionMakerEvidence = extractDecisionMakerEvidence($, input.url);
   const sourceFields = [
     emails.length ? 'emails' : '',
     phones.length ? 'phones' : '',
     forms.length ? 'forms' : '',
     ctas.length ? 'ctas' : '',
     techStack.length ? 'techStack' : '',
-    workflowSignals.length ? 'workflowSignals' : ''
+    workflowSignals.length ? 'workflowSignals' : '',
+    reviewEvidence.length ? 'reviewEvidence' : '',
+    jobEvidence.length ? 'jobEvidence' : '',
+    decisionMakerEvidence.length ? 'decisionMakerEvidence' : ''
   ].filter(Boolean);
 
   return {
@@ -192,6 +299,9 @@ export function buildAwcEnrichmentFromWebsite(input: BuildWebsiteEnrichmentInput
     forms,
     techStack,
     workflowSignals,
+    reviewEvidence,
+    jobEvidence,
+    decisionMakerEvidence,
     sources: [
       {
         type: 'website',

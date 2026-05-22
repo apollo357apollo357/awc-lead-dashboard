@@ -1,17 +1,17 @@
 {
-  "candidateId": "osm-seed-jeno-s-auto",
-  "companyName": "Jeno’s Auto",
+  "candidateId": "osm-seed-burton-denture-clinic",
+  "companyName": "Burton Denture Clinic",
   "website": {
-    "url": "https://www.jenosauto.com/",
-    "title": "Home | Mysite",
+    "url": "https://www.burtondentureclinic.ca",
+    "title": "Burton Denture Clinic",
     "description": ""
   },
   "contacts": {
     "emails": [
-      "jenosauto777@gmail.comjeno"
+      "burtondentureclinic@gmail.comphone"
     ],
     "phones": [
-      "7804548486"
+      "7804223235"
     ]
   },
   "intakeChannels": [
@@ -20,14 +20,13 @@
     "booking link"
   ],
   "ctas": [
-    "Contact Us",
-    "CONTACT US"
+    "Contact",
+    "Book a Consultation",
+    "Book Now"
   ],
   "forms": [],
   "techStack": [
-    "Google Tag Manager",
-    "Google Analytics",
-    "Wix"
+    "Squarespace"
   ],
   "workflowSignals": [
     "Booking link exists; map whether booked appointments sync with follow-up reminders."
@@ -38,8 +37,8 @@
   "sources": [
     {
       "type": "website",
-      "url": "https://www.jenosauto.com/",
-      "capturedAt": "2026-05-22T16:47:35.411Z",
+      "url": "https://www.burtondentureclinic.ca",
+      "capturedAt": "2026-05-22T16:47:38.016Z",
       "fields": [
         "emails",
         "phones",
