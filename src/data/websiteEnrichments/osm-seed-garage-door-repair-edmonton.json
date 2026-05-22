@@ -1,0 +1,68 @@
+{
+  "candidateId": "osm-seed-garage-door-repair-edmonton",
+  "companyName": "Garage Door Repair Edmonton",
+  "website": {
+    "url": "https://www.garage-repairs-edmonton.ca/",
+    "title": "Garage Door Repair Edmonton | 780-851-2326 | Sales- Service",
+    "description": "Garage Door Repair Edmonton The greatest anxieties of homeowners in regard to their garage doors are the cost of repairs and the time needed to be completed. At Garage Door Repair Edmonton, we are proud because we have shortened the time needed to respond to your needs for maintenance, our fees policies are reasonable and"
+  },
+  "contacts": {
+    "emails": [],
+    "phones": [
+      "7808512326"
+    ]
+  },
+  "intakeChannels": [
+    "phone",
+    "contact form"
+  ],
+  "ctas": [
+    "Contact Us",
+    "Call Now",
+    "CONTACT US"
+  ],
+  "forms": [
+    {
+      "action": "/#wpcf7-f431-o1",
+      "method": "post",
+      "fields": [
+        "_wpcf7",
+        "_wpcf7_version",
+        "_wpcf7_locale",
+        "_wpcf7_unit_tag",
+        "_wpcf7_container_post",
+        "_wpcf7_posted_data_hash",
+        "your-name",
+        "your-email",
+        "your-subject",
+        "your-message",
+        "random-number-quiz",
+        "_wpcf7_quiz_answer_random-number-quiz"
+      ]
+    }
+  ],
+  "techStack": [
+    "Google Tag Manager",
+    "Google Analytics",
+    "WordPress"
+  ],
+  "workflowSignals": [
+    "Public form captures phone/email fields for follow-up routing.",
+    "Phone and form intake both exist; map whether they land in one follow-up workflow.",
+    "Analytics/tooling is present alongside forms; map whether lead events are tracked through follow-up."
+  ],
+  "sources": [
+    {
+      "type": "website",
+      "url": "https://www.garage-repairs-edmonton.ca/",
+      "capturedAt": "2026-05-22T15:26:59.232Z",
+      "fields": [
+        "phones",
+        "forms",
+        "ctas",
+        "techStack",
+        "workflowSignals"
+      ]
+    }
+  ]
+}

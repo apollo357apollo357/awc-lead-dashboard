@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { CandidateBusiness } from '../types';
 import { buildLeadProfileFromCandidate, normalizeCandidateWebsite, sourceIdForCandidate } from './osint';
+import type { AwcWebsiteEnrichment } from './enrichment';
 
 const candidate: CandidateBusiness = {
   id: 'osm-node-1',
@@ -69,6 +70,50 @@ describe('real candidate OSINT profile builder', () => {
       'Capture exact public review or customer-language evidence before referencing pain.',
       'Confirm contact details before outreach.'
     ]));
+  });
+
+  it('applies live website enrichment as validated evidence without inventing missing claims', () => {
+    const websiteEnrichment: AwcWebsiteEnrichment = {
+      candidateId: candidate.id,
+      companyName: candidate.companyName,
+      website: {
+        url: 'https://www.ryfan.ca',
+        title: 'Ryfan Industrial Electric',
+        description: 'Industrial electrical services in Alberta.'
+      },
+      contacts: {
+        emails: ['service@ryfan.ca'],
+        phones: ['+17805718000']
+      },
+      intakeChannels: ['phone', 'email', 'contact form'],
+      ctas: ['Request Service', 'Contact Us'],
+      forms: [{ action: '/contact', method: 'post', fields: ['name', 'email', 'phone', 'message'] }],
+      techStack: ['Google Tag Manager', 'WordPress'],
+      workflowSignals: ['Phone and form intake both exist; map whether they land in one follow-up workflow.'],
+      sources: [{
+        type: 'website',
+        url: 'https://www.ryfan.ca',
+        capturedAt: '2026-05-22T15:30:00.000Z',
+        fields: ['emails', 'phones', 'forms', 'ctas', 'techStack', 'workflowSignals']
+      }]
+    };
+
+    const lead = buildLeadProfileFromCandidate(candidate, { websiteEnrichment });
+
+    expect(lead.accountability.validationStatus).toBe('Partially validated');
+    expect(lead.accountability.lastSourceValidatedAt).toBe('2026-05-22T15:30:00.000Z');
+    expect(lead.accountability.profileStatus).toBe('Website source validated from live fetch; non-website claims still require validation.');
+    expect(lead.accountability.sourceLedger).toContainEqual(expect.objectContaining({
+      label: 'Validated website fetch',
+      url: 'https://www.ryfan.ca',
+      note: expect.stringContaining('Captured 2026-05-22T15:30:00.000Z')
+    }));
+    expect(lead.websiteAudit.systemSignals).toEqual(expect.arrayContaining([
+      'Validated intake channels: phone, email, contact form.',
+      'Validated tools/scripts: Google Tag Manager, WordPress.'
+    ]));
+    expect(lead.websiteAudit.conversionIssues).toContain('Validated website has 1 form(s); inspect destination, routing, notification owner, and CRM capture.');
+    expect(lead.contact.email).toBe('service@ryfan.ca');
   });
 
   it('adds hiring-post signals to the lead profile and score buckets', () => {

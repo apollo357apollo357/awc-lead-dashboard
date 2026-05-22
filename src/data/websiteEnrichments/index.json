@@ -1,0 +1,338 @@
+[
+  {
+    "candidateId": "osm-seed-dent-force-paintless-dent-repair",
+    "companyName": "DENT FORCE Paintless Dent Repair",
+    "website": {
+      "url": "https://dentforce.ca/dent-repair-edmonton/",
+      "title": "Paintless Dent Repair Services | Car Dent Removal Company",
+      "description": "Paintless dent repair services from 【Dented】 that fixes ✔car hail damage, ✔door dings & ✔other vehicle dents. ➦ Our company provides auto dent removal services."
+    },
+    "contacts": {
+      "emails": [],
+      "phones": [
+        "+18336833227"
+      ]
+    },
+    "intakeChannels": [
+      "phone",
+      "booking link"
+    ],
+    "ctas": [
+      "Contact",
+      "Get an estimate",
+      "Book now",
+      "Free Estimate",
+      "Online Estimate",
+      "Facebook"
+    ],
+    "forms": [],
+    "techStack": [
+      "Google Tag Manager",
+      "HubSpot",
+      "WordPress"
+    ],
+    "workflowSignals": [
+      "Booking link exists; map whether booked appointments sync with follow-up reminders.",
+      "Quote-oriented CTA creates a natural conversation around lead qualification and quote follow-up."
+    ],
+    "sources": [
+      {
+        "type": "website",
+        "url": "https://dentforce.ca/dent-repair-edmonton/",
+        "capturedAt": "2026-05-22T15:26:58.486Z",
+        "fields": [
+          "phones",
+          "ctas",
+          "techStack",
+          "workflowSignals"
+        ]
+      }
+    ]
+  },
+  {
+    "candidateId": "osm-seed-garage-door-repair-edmonton",
+    "companyName": "Garage Door Repair Edmonton",
+    "website": {
+      "url": "https://www.garage-repairs-edmonton.ca/",
+      "title": "Garage Door Repair Edmonton | 780-851-2326 | Sales- Service",
+      "description": "Garage Door Repair Edmonton The greatest anxieties of homeowners in regard to their garage doors are the cost of repairs and the time needed to be completed. At Garage Door Repair Edmonton, we are proud because we have shortened the time needed to respond to your needs for maintenance, our fees policies are reasonable and"
+    },
+    "contacts": {
+      "emails": [],
+      "phones": [
+        "7808512326"
+      ]
+    },
+    "intakeChannels": [
+      "phone",
+      "contact form"
+    ],
+    "ctas": [
+      "Contact Us",
+      "Call Now",
+      "CONTACT US"
+    ],
+    "forms": [
+      {
+        "action": "/#wpcf7-f431-o1",
+        "method": "post",
+        "fields": [
+          "_wpcf7",
+          "_wpcf7_version",
+          "_wpcf7_locale",
+          "_wpcf7_unit_tag",
+          "_wpcf7_container_post",
+          "_wpcf7_posted_data_hash",
+          "your-name",
+          "your-email",
+          "your-subject",
+          "your-message",
+          "random-number-quiz",
+          "_wpcf7_quiz_answer_random-number-quiz"
+        ]
+      }
+    ],
+    "techStack": [
+      "Google Tag Manager",
+      "Google Analytics",
+      "WordPress"
+    ],
+    "workflowSignals": [
+      "Public form captures phone/email fields for follow-up routing.",
+      "Phone and form intake both exist; map whether they land in one follow-up workflow.",
+      "Analytics/tooling is present alongside forms; map whether lead events are tracked through follow-up."
+    ],
+    "sources": [
+      {
+        "type": "website",
+        "url": "https://www.garage-repairs-edmonton.ca/",
+        "capturedAt": "2026-05-22T15:26:59.232Z",
+        "fields": [
+          "phones",
+          "forms",
+          "ctas",
+          "techStack",
+          "workflowSignals"
+        ]
+      }
+    ]
+  },
+  {
+    "candidateId": "osm-seed-go-asphalt-ltd",
+    "companyName": "Go Asphalt Ltd",
+    "website": {
+      "url": "https://www.goasphalt.ca",
+      "title": "UPave – Professional Asphalt Paving & Maintenance Services in Edmonton",
+      "description": "Discover UPave’s expert asphalt paving, maintenance, and snow removal services in Edmonton. Reliable, safe, and built to last for residential, commercial, and municipal projects."
+    },
+    "contacts": {
+      "emails": [
+        "info@upave.ca"
+      ],
+      "phones": [
+        "7806865700"
+      ]
+    },
+    "intakeChannels": [
+      "phone",
+      "email",
+      "contact form"
+    ],
+    "ctas": [
+      "Contact",
+      "Get a Quote",
+      "GET A QUOTE",
+      "Municipal Asphalt Paving Services No room for error. We help cities, contractors, and developers complete municipal paving projects on schedule with quality that lasts. READ MORE+",
+      "Asphalt & Paving Equipment Rentals Rent construction and asphalt equipment, with optional on-site support. Contact us today. READ MORE+",
+      "GET A QUOTE+",
+      "Contact Us",
+      "Get a quote"
+    ],
+    "forms": [
+      {
+        "action": "/search",
+        "method": "post",
+        "fields": [
+          "XPR_PostbackAction",
+          "q"
+        ]
+      }
+    ],
+    "techStack": [
+      "Google Tag Manager",
+      "Google Analytics",
+      "WordPress"
+    ],
+    "workflowSignals": [
+      "Phone and form intake both exist; map whether they land in one follow-up workflow.",
+      "Quote-oriented CTA creates a natural conversation around lead qualification and quote follow-up.",
+      "Analytics/tooling is present alongside forms; map whether lead events are tracked through follow-up."
+    ],
+    "sources": [
+      {
+        "type": "website",
+        "url": "https://www.goasphalt.ca",
+        "capturedAt": "2026-05-22T15:27:02.495Z",
+        "fields": [
+          "emails",
+          "phones",
+          "forms",
+          "ctas",
+          "techStack",
+          "workflowSignals"
+        ]
+      }
+    ]
+  },
+  {
+    "candidateId": "osm-seed-jeno-s-auto",
+    "companyName": "Jeno’s Auto",
+    "website": {
+      "url": "https://www.jenosauto.com/",
+      "title": "Home | Mysite",
+      "description": ""
+    },
+    "contacts": {
+      "emails": [
+        "jenosauto777@gmail.comjeno"
+      ],
+      "phones": [
+        "7804548486"
+      ]
+    },
+    "intakeChannels": [
+      "phone",
+      "email",
+      "booking link"
+    ],
+    "ctas": [
+      "Contact Us",
+      "CONTACT US"
+    ],
+    "forms": [],
+    "techStack": [
+      "Google Tag Manager",
+      "Google Analytics",
+      "Wix"
+    ],
+    "workflowSignals": [
+      "Booking link exists; map whether booked appointments sync with follow-up reminders."
+    ],
+    "sources": [
+      {
+        "type": "website",
+        "url": "https://www.jenosauto.com/",
+        "capturedAt": "2026-05-22T15:27:03.564Z",
+        "fields": [
+          "emails",
+          "phones",
+          "ctas",
+          "techStack",
+          "workflowSignals"
+        ]
+      }
+    ]
+  },
+  {
+    "candidateId": "osm-seed-affinity-dental-kingsway",
+    "companyName": "Affinity Dental Kingsway",
+    "website": {
+      "url": "https://www.edmontondental.ca/",
+      "title": "Dentist in Edmonton | Dentist Near Me | Dental Clinic in Edmonton, AB",
+      "description": "Looking for affordable dental care in Edmonton? Manchester Dental Clinic in Edmonton offers affordable, high-quality cosmetic, emergency & family dentistry near you in Edmonton"
+    },
+    "contacts": {
+      "emails": [],
+      "phones": [
+        "7804712102",
+        "5874024428"
+      ]
+    },
+    "intakeChannels": [
+      "phone",
+      "contact form",
+      "booking link"
+    ],
+    "ctas": [
+      "We Accept The Canadian Dental Care Plan (CDCP), Schedule Your Appointment Today!",
+      "Contact",
+      "(780) 471-2102Call for emergrncy",
+      "Book an Appointment",
+      "Request Appointment",
+      "Call Now",
+      "Book Appointment",
+      "Contact Us"
+    ],
+    "forms": [
+      {
+        "action": "/#wpcf7-f1425-p4617-o1",
+        "method": "post",
+        "fields": [
+          "_wpcf7",
+          "_wpcf7_version",
+          "_wpcf7_locale",
+          "_wpcf7_unit_tag",
+          "_wpcf7_container_post",
+          "_wpcf7_posted_data_hash",
+          "_wpcf7_recaptcha_response",
+          "f-name",
+          "f-phone",
+          "f-email",
+          "f-date",
+          "f-patient",
+          "f-time",
+          "f-message",
+          "current-page-url",
+          "previous-page-url"
+        ]
+      },
+      {
+        "action": "/#wpcf7-f1309-o2",
+        "method": "post",
+        "fields": [
+          "_wpcf7",
+          "_wpcf7_version",
+          "_wpcf7_locale",
+          "_wpcf7_unit_tag",
+          "_wpcf7_container_post",
+          "_wpcf7_posted_data_hash",
+          "_wpcf7_recaptcha_response",
+          "f-name",
+          "f-email",
+          "f-phone",
+          "f-patient",
+          "f-date",
+          "f-time",
+          "f-message",
+          "current-page-url",
+          "previous-page-url"
+        ]
+      }
+    ],
+    "techStack": [
+      "Google Tag Manager",
+      "Meta Pixel",
+      "WordPress"
+    ],
+    "workflowSignals": [
+      "Public form captures phone/email fields for follow-up routing.",
+      "Booking link exists; map whether booked appointments sync with follow-up reminders.",
+      "Phone and form intake both exist; map whether they land in one follow-up workflow.",
+      "Analytics/tooling is present alongside forms; map whether lead events are tracked through follow-up."
+    ],
+    "sources": [
+      {
+        "type": "website",
+        "url": "https://www.edmontondental.ca/",
+        "capturedAt": "2026-05-22T15:27:04.492Z",
+        "fields": [
+          "phones",
+          "forms",
+          "ctas",
+          "techStack",
+          "workflowSignals"
+        ]
+      }
+    ]
+  }
+]

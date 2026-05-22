@@ -1,0 +1,50 @@
+{
+  "candidateId": "osm-seed-dent-force-paintless-dent-repair",
+  "companyName": "DENT FORCE Paintless Dent Repair",
+  "website": {
+    "url": "https://dentforce.ca/dent-repair-edmonton/",
+    "title": "Paintless Dent Repair Services | Car Dent Removal Company",
+    "description": "Paintless dent repair services from 【Dented】 that fixes ✔car hail damage, ✔door dings & ✔other vehicle dents. ➦ Our company provides auto dent removal services."
+  },
+  "contacts": {
+    "emails": [],
+    "phones": [
+      "+18336833227"
+    ]
+  },
+  "intakeChannels": [
+    "phone",
+    "booking link"
+  ],
+  "ctas": [
+    "Contact",
+    "Get an estimate",
+    "Book now",
+    "Free Estimate",
+    "Online Estimate",
+    "Facebook"
+  ],
+  "forms": [],
+  "techStack": [
+    "Google Tag Manager",
+    "HubSpot",
+    "WordPress"
+  ],
+  "workflowSignals": [
+    "Booking link exists; map whether booked appointments sync with follow-up reminders.",
+    "Quote-oriented CTA creates a natural conversation around lead qualification and quote follow-up."
+  ],
+  "sources": [
+    {
+      "type": "website",
+      "url": "https://dentforce.ca/dent-repair-edmonton/",
+      "capturedAt": "2026-05-22T15:26:58.486Z",
+      "fields": [
+        "phones",
+        "ctas",
+        "techStack",
+        "workflowSignals"
+      ]
+    }
+  ]
+}

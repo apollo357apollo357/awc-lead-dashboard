@@ -1,6 +1,8 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Building2, ExternalLink, Gauge, Mail, MapPin, MessageSquarePlus, Phone, RefreshCw, ShieldCheck, Sparkles, Target, UserRound, Voicemail, Wrench } from 'lucide-react';
 import { candidateBusinesses } from './data/candidateBusinesses';
+import websiteEnrichments from './data/websiteEnrichments/index.json';
+import type { AwcWebsiteEnrichment } from './lib/enrichment';
 import type { CallLog, CandidateBusiness, Lead } from './types';
 import { buildLeadProfileFromCandidate } from './lib/osint';
 import { calculatePriorityScore, countWeeklyConversations, createVoicemailScript, gradeLead, summarizeLeadForCall } from './lib/leadScoring';
@@ -12,6 +14,9 @@ const OSINT_REFRESH_STORAGE_KEY = 'awc-lead-osint-refresh-map-v1';
 const WEEKLY_CONVERSATION_GOAL = 5;
 const scoreLabel = (lead: Lead) => `${gradeLead(lead)} / ${calculatePriorityScore(lead)}`;
 type OsintRefreshMap = Record<string, string>;
+const websiteEnrichmentMap = new Map(
+  (websiteEnrichments as AwcWebsiteEnrichment[]).map((enrichment) => [enrichment.candidateId, enrichment])
+);
 
 const loadCallLogs = (): CallLog[] => {
   if (typeof window === 'undefined') return [];
@@ -431,7 +436,7 @@ export default function App() {
   }, [osintRefreshMap]);
 
   const osintIdSet = useMemo(() => new Set(osintProfileIds), [osintProfileIds]);
-  const leadProfiles = useMemo(() => new Map(candidateBusinesses.filter((candidate) => osintIdSet.has(candidate.id)).map((candidate) => [candidate.id, buildLeadProfileFromCandidate(candidate, { refreshedAt: osintRefreshMap[candidate.id] })])), [osintIdSet, osintRefreshMap]);
+  const leadProfiles = useMemo(() => new Map(candidateBusinesses.filter((candidate) => osintIdSet.has(candidate.id)).map((candidate) => [candidate.id, buildLeadProfileFromCandidate(candidate, { refreshedAt: osintRefreshMap[candidate.id], websiteEnrichment: websiteEnrichmentMap.get(candidate.id) })])), [osintIdSet, osintRefreshMap]);
   const categories = useMemo(() => ['All categories', ...Array.from(new Set(candidateBusinesses.map((candidate) => candidate.category.replace(/_/g, ' ')))).sort()], []);
 
   const filtered = useMemo(() => {
@@ -479,10 +484,10 @@ export default function App() {
           <small>No synthetic/example leads. Seeded from real public business records; profile claims remain labeled until validated.</small>
         </section>
         <section className="metric-card">
-          <span>Job-post signals</span>
-          <strong>{candidateBusinesses.filter((candidate) => candidate.jobPostSignals?.length).length}</strong>
-          <p>Automation/AI hiring matches captured from public job boards.</p>
-          <small>Search targets are attached for manual/authorized validation; do not treat uncaptured jobs as evidence.</small>
+          <span>Website validations</span>
+          <strong>{websiteEnrichmentMap.size}</strong>
+          <p>{websiteEnrichmentMap.size} website source validation{websiteEnrichmentMap.size === 1 ? '' : 's'} committed.</p>
+          <small>Live website fetches are compiled into the app as dated source evidence; failed/unfetched sites remain seed-only.</small>
         </section>
         <label className="filter-label" htmlFor="lead-search">Search by company, category, location, website, phone, email</label>
         <input id="lead-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Try roofing, dental, Spruce Grove…" />

@@ -1,0 +1,67 @@
+{
+  "candidateId": "osm-seed-go-asphalt-ltd",
+  "companyName": "Go Asphalt Ltd",
+  "website": {
+    "url": "https://www.goasphalt.ca",
+    "title": "UPave – Professional Asphalt Paving & Maintenance Services in Edmonton",
+    "description": "Discover UPave’s expert asphalt paving, maintenance, and snow removal services in Edmonton. Reliable, safe, and built to last for residential, commercial, and municipal projects."
+  },
+  "contacts": {
+    "emails": [
+      "info@upave.ca"
+    ],
+    "phones": [
+      "7806865700"
+    ]
+  },
+  "intakeChannels": [
+    "phone",
+    "email",
+    "contact form"
+  ],
+  "ctas": [
+    "Contact",
+    "Get a Quote",
+    "GET A QUOTE",
+    "Municipal Asphalt Paving Services No room for error. We help cities, contractors, and developers complete municipal paving projects on schedule with quality that lasts. READ MORE+",
+    "Asphalt & Paving Equipment Rentals Rent construction and asphalt equipment, with optional on-site support. Contact us today. READ MORE+",
+    "GET A QUOTE+",
+    "Contact Us",
+    "Get a quote"
+  ],
+  "forms": [
+    {
+      "action": "/search",
+      "method": "post",
+      "fields": [
+        "XPR_PostbackAction",
+        "q"
+      ]
+    }
+  ],
+  "techStack": [
+    "Google Tag Manager",
+    "Google Analytics",
+    "WordPress"
+  ],
+  "workflowSignals": [
+    "Phone and form intake both exist; map whether they land in one follow-up workflow.",
+    "Quote-oriented CTA creates a natural conversation around lead qualification and quote follow-up.",
+    "Analytics/tooling is present alongside forms; map whether lead events are tracked through follow-up."
+  ],
+  "sources": [
+    {
+      "type": "website",
+      "url": "https://www.goasphalt.ca",
+      "capturedAt": "2026-05-22T15:27:02.495Z",
+      "fields": [
+        "emails",
+        "phones",
+        "forms",
+        "ctas",
+        "techStack",
+        "workflowSignals"
+      ]
+    }
+  ]
+}

@@ -1,4 +1,5 @@
-import type { CandidateBusiness, Lead } from '../types';
+import type { CandidateBusiness, EvidenceSource, Lead } from '../types';
+import type { AwcWebsiteEnrichment } from './enrichment';
 import { buildJobSearchUrls, scoreHiringSignals, summarizeHiringSignals } from './hiringSignals';
 
 const categoryLabels: Record<string, string> = {
@@ -117,7 +118,49 @@ function buildSellingPoints(candidate: CandidateBusiness): string[] {
 
 type BuildLeadProfileOptions = {
   refreshedAt?: string;
+  websiteEnrichment?: AwcWebsiteEnrichment;
 };
+
+function buildValidatedWebsiteSource(enrichment: AwcWebsiteEnrichment): EvidenceSource | undefined {
+  const websiteSource = enrichment.sources.find((source) => source.type === 'website');
+  if (!websiteSource) return undefined;
+
+  return {
+    label: 'Validated website fetch',
+    url: websiteSource.url,
+    note: `Captured ${websiteSource.capturedAt}; fields: ${websiteSource.fields.length ? websiteSource.fields.join(', ') : 'no tracked fields detected'}`
+  };
+}
+
+function validatedWebsiteSystemSignals(enrichment?: AwcWebsiteEnrichment): string[] {
+  if (!enrichment) return [];
+
+  return [
+    enrichment.intakeChannels.length ? `Validated intake channels: ${enrichment.intakeChannels.join(', ')}.` : 'Validated website fetch did not expose phone, email, form, or booking intake channels.',
+    enrichment.techStack.length ? `Validated tools/scripts: ${enrichment.techStack.join(', ')}.` : 'Validated website fetch did not expose recognized analytics, CMS, booking, form, or chat tooling.',
+    ...enrichment.workflowSignals.map((signal) => `Validated website signal: ${signal}`)
+  ];
+}
+
+function validatedWebsiteConversionIssues(enrichment?: AwcWebsiteEnrichment): string[] {
+  if (!enrichment) return [];
+
+  if (enrichment.forms.length > 0) {
+    return [`Validated website has ${enrichment.forms.length} form(s); inspect destination, routing, notification owner, and CRM capture.`];
+  }
+
+  return ['Validated website fetch found no native form; inspect whether calls, email, booking links, or third-party widgets handle intake.'];
+}
+
+function validatedWebsiteQuickWins(enrichment?: AwcWebsiteEnrichment): string[] {
+  if (!enrichment) return [];
+
+  const wins: string[] = [];
+  if (enrichment.ctas.length > 0) wins.push(`Use validated CTAs as outreach context: ${enrichment.ctas.slice(0, 4).join(', ')}.`);
+  if (enrichment.contacts.emails.length > 0 || enrichment.contacts.phones.length > 0) wins.push('Compare validated website contact channels against the seed record before calling.');
+  if (enrichment.forms.length > 0) wins.push('Map form submission ownership, notification timing, CRM capture, and missed follow-up risk.');
+  return wins;
+}
 
 export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, options: BuildLeadProfileOptions = {}): Lead {
   const website = normalizeCandidateWebsite(candidate.website);
@@ -128,9 +171,13 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, opti
   const hiringSignals = candidate.jobPostSignals ?? [];
   const hiringScore = scoreHiringSignals(hiringSignals);
   const hasHiringSignal = hiringSignals.length > 0;
+  const websiteEnrichment = options.websiteEnrichment?.candidateId === candidate.id ? options.websiteEnrichment : undefined;
+  const validatedWebsiteSource = websiteEnrichment ? buildValidatedWebsiteSource(websiteEnrichment) : undefined;
+  const lastSourceValidatedAt = websiteEnrichment?.sources[0]?.capturedAt;
   const profileSources = [
     { label: 'OpenStreetMap candidate record', url: candidate.sourceUrl, note: [sourceIdForCandidate(candidate), refreshedNote].filter(Boolean).join(' · ') },
     ...(website ? [{ label: 'Company website', url: website, note: ['Captured from public listing; not live-validated by this profile refresh.', refreshedNote].filter(Boolean).join(' · ') }] : []),
+    ...(validatedWebsiteSource ? [validatedWebsiteSource] : []),
     ...hiringSignals.map((signal) => ({ label: `${signal.source} hiring signal`, url: signal.sourceUrl, note: `${signal.title}${signal.postedAt ? ` · Posted ${signal.postedAt}` : ''}` })),
     ...buildJobSearchUrls(candidate.companyName, location)
   ];
@@ -179,8 +226,8 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, opti
     contact: {
       name: 'Business owner / operations lead',
       title: `Decision maker for ${candidate.companyName}`,
-      email: candidate.email,
-      phone: candidate.phone,
+      email: websiteEnrichment?.contacts.emails[0] ?? candidate.email,
+      phone: websiteEnrichment?.contacts.phones[0] ?? candidate.phone,
       summary: 'Start with the owner/operator or operations lead unless a public website, LinkedIn page, registry page, or call discovery identifies a more specific contact.',
       conversationOpeners: [
         `I was looking at ${candidate.companyName}'s public business listing and had a practical question about your intake/follow-up workflow.`,
@@ -198,17 +245,20 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, opti
       grade: website ? 'C' : 'D',
       conversionIssues: [
         website ? 'Website exists; map whether the primary CTA leads to a measurable intake path.' : 'No website captured in seed data; use phone-first outreach and add website if found.',
+        ...validatedWebsiteConversionIssues(websiteEnrichment),
         'Map whether contact forms trigger structured follow-up, routing, reminders, or CRM capture.',
         'Map whether calls, forms, emails, and reviews are connected to one operational workflow.'
       ],
       systemSignals: [
         candidate.publicTags.opening_hours ? `Published hours suggest schedule-sensitive intake: ${candidate.publicTags.opening_hours}` : 'Operating hours not captured in seed record.',
         hasDirectContact ? 'Public contact channel exists; useful for outbound validation.' : 'No direct public contact channel captured yet.',
+        ...validatedWebsiteSystemSignals(websiteEnrichment),
         `${industry} businesses commonly need repeatable intake, scheduling, quoting, reminder, and follow-up systems.`,
         ...(hasHiringSignal ? [`Job-post signal: automation and systems hiring intent detected. ${summarizeHiringSignals(hiringSignals)}`] : [])
       ],
       quickWins: [
         'Verify website CTA/contact form path and map what happens after submission.',
+        ...validatedWebsiteQuickWins(websiteEnrichment),
         'Look for missed-call, quote-request, booking, reminder, review-request, and reactivation automation opportunities.',
         'Capture one concrete public friction point before calling so the outreach feels specific.'
       ],
@@ -221,13 +271,14 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, opti
     },
     accountability: {
       dataPolicy: 'Real public data only; no synthetic, demo, or example lead data.',
-      profileStatus: 'Generated from seed record; not live-source revalidated yet.',
+      profileStatus: websiteEnrichment ? 'Website source validated from live fetch; non-website claims still require validation.' : 'Generated from seed record; not live-source revalidated yet.',
       scoreStatus: 'AWC rubric score from captured fields, not a verified pain claim.',
-      validationStatus: 'Seed only',
+      validationStatus: websiteEnrichment ? 'Partially validated' : 'Seed only',
       lastProfileGeneratedAt: options.refreshedAt,
+      lastSourceValidatedAt,
       sourceLedger: profileSources.filter((source) => !['Canada Job Bank', 'Indeed', 'LinkedIn Jobs search'].includes(source.label)),
       unknowns: [
-        'Live website CTA/form behavior has not been validated in this browser session.',
+        ...(websiteEnrichment ? [] : ['Live website CTA/form behavior has not been validated in this browser session.']),
         'Review language has not been captured or quoted yet.',
         'Decision-maker identity is unknown until verified from a public source or call discovery.',
         'Current tool stack, CRM, booking system, and automation maturity are unknown until direct website inspection or discovery.'

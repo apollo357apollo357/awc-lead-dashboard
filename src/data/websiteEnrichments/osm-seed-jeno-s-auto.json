@@ -1,0 +1,49 @@
+{
+  "candidateId": "osm-seed-jeno-s-auto",
+  "companyName": "Jeno’s Auto",
+  "website": {
+    "url": "https://www.jenosauto.com/",
+    "title": "Home | Mysite",
+    "description": ""
+  },
+  "contacts": {
+    "emails": [
+      "jenosauto777@gmail.comjeno"
+    ],
+    "phones": [
+      "7804548486"
+    ]
+  },
+  "intakeChannels": [
+    "phone",
+    "email",
+    "booking link"
+  ],
+  "ctas": [
+    "Contact Us",
+    "CONTACT US"
+  ],
+  "forms": [],
+  "techStack": [
+    "Google Tag Manager",
+    "Google Analytics",
+    "Wix"
+  ],
+  "workflowSignals": [
+    "Booking link exists; map whether booked appointments sync with follow-up reminders."
+  ],
+  "sources": [
+    {
+      "type": "website",
+      "url": "https://www.jenosauto.com/",
+      "capturedAt": "2026-05-22T15:27:03.564Z",
+      "fields": [
+        "emails",
+        "phones",
+        "ctas",
+        "techStack",
+        "workflowSignals"
+      ]
+    }
+  ]
+}

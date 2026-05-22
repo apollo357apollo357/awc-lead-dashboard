@@ -70,6 +70,7 @@ async function main() {
   await mkdir(options.outputDir, { recursive: true });
 
   const results = [];
+  const enrichments = [];
   for (const candidate of selected) {
     const url = normalizeCandidateWebsite(candidate.website);
     process.stderr.write(`Enriching ${candidate.companyName} <${url}>\n`);
@@ -84,6 +85,7 @@ async function main() {
       });
       const outputPath = path.join(options.outputDir, `${candidate.id}.json`);
       await writeFile(outputPath, `${JSON.stringify(enrichment, null, 2)}\n`);
+      enrichments.push(enrichment);
       results.push({ id: candidate.id, companyName: candidate.companyName, status: 'ok', outputPath, signals: enrichment.workflowSignals.length });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -91,7 +93,10 @@ async function main() {
     }
   }
 
-  console.log(JSON.stringify({ generatedAt: new Date().toISOString(), results }, null, 2));
+  const indexPath = path.join(options.outputDir, 'index.json');
+  await writeFile(indexPath, `${JSON.stringify(enrichments, null, 2)}\n`);
+
+  console.log(JSON.stringify({ generatedAt: new Date().toISOString(), indexPath, results }, null, 2));
 }
 
 main().catch((error) => {

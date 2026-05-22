@@ -1,0 +1,102 @@
+{
+  "candidateId": "osm-seed-affinity-dental-kingsway",
+  "companyName": "Affinity Dental Kingsway",
+  "website": {
+    "url": "https://www.edmontondental.ca/",
+    "title": "Dentist in Edmonton | Dentist Near Me | Dental Clinic in Edmonton, AB",
+    "description": "Looking for affordable dental care in Edmonton? Manchester Dental Clinic in Edmonton offers affordable, high-quality cosmetic, emergency & family dentistry near you in Edmonton"
+  },
+  "contacts": {
+    "emails": [],
+    "phones": [
+      "7804712102",
+      "5874024428"
+    ]
+  },
+  "intakeChannels": [
+    "phone",
+    "contact form",
+    "booking link"
+  ],
+  "ctas": [
+    "We Accept The Canadian Dental Care Plan (CDCP), Schedule Your Appointment Today!",
+    "Contact",
+    "(780) 471-2102Call for emergrncy",
+    "Book an Appointment",
+    "Request Appointment",
+    "Call Now",
+    "Book Appointment",
+    "Contact Us"
+  ],
+  "forms": [
+    {
+      "action": "/#wpcf7-f1425-p4617-o1",
+      "method": "post",
+      "fields": [
+        "_wpcf7",
+        "_wpcf7_version",
+        "_wpcf7_locale",
+        "_wpcf7_unit_tag",
+        "_wpcf7_container_post",
+        "_wpcf7_posted_data_hash",
+        "_wpcf7_recaptcha_response",
+        "f-name",
+        "f-phone",
+        "f-email",
+        "f-date",
+        "f-patient",
+        "f-time",
+        "f-message",
+        "current-page-url",
+        "previous-page-url"
+      ]
+    },
+    {
+      "action": "/#wpcf7-f1309-o2",
+      "method": "post",
+      "fields": [
+        "_wpcf7",
+        "_wpcf7_version",
+        "_wpcf7_locale",
+        "_wpcf7_unit_tag",
+        "_wpcf7_container_post",
+        "_wpcf7_posted_data_hash",
+        "_wpcf7_recaptcha_response",
+        "f-name",
+        "f-email",
+        "f-phone",
+        "f-patient",
+        "f-date",
+        "f-time",
+        "f-message",
+        "current-page-url",
+        "previous-page-url"
+      ]
+    }
+  ],
+  "techStack": [
+    "Google Tag Manager",
+    "Meta Pixel",
+    "WordPress"
+  ],
+  "workflowSignals": [
+    "Public form captures phone/email fields for follow-up routing.",
+    "Booking link exists; map whether booked appointments sync with follow-up reminders.",
+    "Phone and form intake both exist; map whether they land in one follow-up workflow.",
+    "Analytics/tooling is present alongside forms; map whether lead events are tracked through follow-up."
+  ],
+  "sources": [
+    {
+      "type": "website",
+      "url": "https://www.edmontondental.ca/",
+      "capturedAt": "2026-05-22T15:27:04.492Z",
+      "fields": [
+        "phones",
+        "forms",
+        "ctas",
+        "techStack",
+        "workflowSignals"
+      ]
+    }
+  ]
+}
