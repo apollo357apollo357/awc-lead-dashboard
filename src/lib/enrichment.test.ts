@@ -71,6 +71,25 @@ describe('AWC website enrichment extraction', () => {
     }));
   });
 
+  it('extracts point-of-contact candidates from additional About or team pages with the exact source URL', () => {
+    const result = buildAwcEnrichmentFromWebsite({
+      candidateId: 'example-roofing',
+      companyName: 'Example Roofing',
+      url: 'https://example-roofing.ca/',
+      html: '<html><body><a href="/about-us">About Us</a></body></html>',
+      additionalPages: [{
+        url: 'https://example-roofing.ca/about-us',
+        html: '<main><h1>About Us</h1><p>Michael Carter, Owner</p></main>'
+      }]
+    });
+
+    expect(result.decisionMakerEvidence).toContainEqual(expect.objectContaining({
+      name: 'Michael Carter',
+      title: 'Owner',
+      sourceUrl: 'https://example-roofing.ca/about-us'
+    }));
+  });
+
   it('ignores phone-like numbers inside scripts and styles', () => {
     const result = buildAwcEnrichmentFromWebsite({
       candidateId: 'script-heavy-site',

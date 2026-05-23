@@ -291,53 +291,19 @@ function CandidateProfile({ candidate, onRunOsint }: { candidate: CandidateBusin
   );
 }
 
-function AccountabilityPanel({ lead }: { lead: Lead }) {
-  return (
-    <section className="card accountability">
-      <h3><ShieldCheck size={18} /> Real-data accountability</h3>
-      <div className="accountability-grid">
-        <div>
-          <span>Data policy</span>
-          <strong>{lead.accountability.dataPolicy}</strong>
-        </div>
-        <div>
-          <span>Profile status</span>
-          <strong>{lead.accountability.profileStatus}</strong>
-        </div>
-        <div>
-          <span>Score status</span>
-          <strong>{lead.accountability.scoreStatus}</strong>
-        </div>
-        <div>
-          <span>Validation status</span>
-          <strong>{lead.accountability.validationStatus}</strong>
-        </div>
-      </div>
-      <div className="grid two accountability-lists">
-        <ListBlock title="Unknown until verified" items={lead.accountability.unknowns} />
-        <ListBlock title="Required validation before confident outreach" items={lead.accountability.requiredValidationSteps} />
-      </div>
-      <p className="field-help">If evidence is not in the source ledger or call notes, treat it as unverified. Do not reference guessed pain, contacts, reviews, or tools as facts.</p>
-    </section>
-  );
-}
-
 function ValidationQueue({ lead }: { lead: Lead }) {
   return (
     <section className="card validation-queue">
-      <h3><ShieldCheck size={18} /> Source validation queue</h3>
-      <p className="field-help">Each category must move from not checked to validated or failed with source evidence before it becomes outreach proof.</p>
-      <div className="validation-grid">
+      <h3><ShieldCheck size={18} /> Research status</h3>
+      <div className="validation-grid compact-status">
         {lead.accountability.validationQueue.map((item) => (
           <article key={item.category} className={`validation-item ${item.status.replace(' ', '-')}`}>
             <div>
               <strong>{item.category}</strong>
               <span>{item.status}</span>
             </div>
-            <p>{item.note}</p>
-            <small>Evidence: {item.evidenceCount}{item.checkedAt ? ` · Checked ${item.checkedAt}` : ''}</small>
+            <small>{item.evidenceCount} source{item.evidenceCount === 1 ? '' : 's'}{item.checkedAt ? ` · ${new Date(item.checkedAt).toLocaleDateString()}` : ''}</small>
             {item.sourceUrl ? <a href={item.sourceUrl} target="_blank" rel="noreferrer">Open source <ExternalLink size={14} /></a> : null}
-            <em>{item.nextStep}</em>
           </article>
         ))}
       </div>
@@ -377,7 +343,7 @@ function LeadDetail({ lead, logs, onAddLog, onRefreshOsint }: { lead: Lead; logs
         </div>
       </section>
 
-      <section className="grid two">
+      <section className="grid three">
         <section className="card accent">
           <h3><Target size={18} /> First-call angle</h3>
           <p>{lead.firstCallAngle}</p>
@@ -387,6 +353,11 @@ function LeadDetail({ lead, logs, onAddLog, onRefreshOsint }: { lead: Lead; logs
           <p><strong>{lead.contact.name}</strong> — {lead.contact.title}</p>
           <p>{lead.contact.summary}</p>
         </section>
+        <section className="card accent">
+          <h3><MapPin size={18} /> Business location</h3>
+          <p><strong>{lead.address || 'Street address not captured'}</strong></p>
+          {lead.mapsUrl ? <a href={lead.mapsUrl} target="_blank" rel="noreferrer">Open in Google Maps <ExternalLink size={14} /></a> : null}
+        </section>
       </section>
 
       <section className="grid two">
@@ -395,8 +366,6 @@ function LeadDetail({ lead, logs, onAddLog, onRefreshOsint }: { lead: Lead; logs
       </section>
 
       <HiringSignals lead={lead} />
-
-      <AccountabilityPanel lead={lead} />
 
       <ValidationQueue lead={lead} />
 

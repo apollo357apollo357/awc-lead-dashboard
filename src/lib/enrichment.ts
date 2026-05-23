@@ -56,6 +56,10 @@ type BuildWebsiteEnrichmentInput = {
   url: string;
   html: string;
   capturedAt?: string;
+  additionalPages?: Array<{
+    url: string;
+    html: string;
+  }>;
 };
 
 const emailPattern = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
@@ -108,6 +112,16 @@ function linkedEvidenceFromAnchors($: cheerio.CheerioAPI, baseUrl: string, match
   }).slice(0, 8);
 }
 
+function uniqueDecisionMakerEvidence(evidence: DecisionMakerEvidence[]): DecisionMakerEvidence[] {
+  const seen = new Set<string>();
+  return evidence.filter((item) => {
+    const key = `${item.name}|${item.title}`.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).slice(0, 6);
+}
+
 function extractDecisionMakerEvidence($: cheerio.CheerioAPI, baseUrl: string): DecisionMakerEvidence[] {
   const titlePattern = '(Owner|Founder|Co-Founder|President|Partner|General Manager|Operations Manager|Office Manager|Clinic Manager|Practice Manager|Director(?: of [A-Z][A-Za-z ]{2,40})?)';
   const patterns = [
@@ -137,13 +151,7 @@ function extractDecisionMakerEvidence($: cheerio.CheerioAPI, baseUrl: string): D
     }
   }
 
-  const seen = new Set<string>();
-  return evidence.filter((item) => {
-    const key = `${item.name}|${item.title}`.toLowerCase();
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  }).slice(0, 6);
+  return uniqueDecisionMakerEvidence(evidence);
 }
 
 function detectTechStack(html: string, linksAndScripts: string[]): string[] {
@@ -269,7 +277,10 @@ export function buildAwcEnrichmentFromWebsite(input: BuildWebsiteEnrichmentInput
     'Careers / jobs source',
     'Careers/jobs source linked from public website.'
   );
-  const decisionMakerEvidence = extractDecisionMakerEvidence($, input.url);
+  const decisionMakerEvidence = uniqueDecisionMakerEvidence([
+    ...extractDecisionMakerEvidence($, input.url),
+    ...(input.additionalPages ?? []).flatMap((page) => extractDecisionMakerEvidence(cheerio.load(page.html), page.url))
+  ]);
   const sourceFields = [
     emails.length ? 'emails' : '',
     phones.length ? 'phones' : '',

@@ -97,6 +97,7 @@ export type Lead = {
   niches: string[];
   location: string;
   address?: string;
+  mapsUrl?: string;
   phone?: string;
   status: 'New' | 'Researching' | 'Qualified' | 'Contacted' | 'Follow-up' | 'Not fit';
   summary: string;

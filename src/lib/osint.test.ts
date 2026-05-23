@@ -38,11 +38,14 @@ describe('real candidate OSINT profile builder', () => {
     expect(lead.id).toBe('osm-node-1');
     expect(lead.companyName).toBe('Ryfan Industrial Electric');
     expect(lead.website).toBe('https://www.ryfan.ca');
-    expect(lead.contact.name).toBe('Business owner / operations lead');
-    expect(lead.contact.title).toContain('Decision maker');
+    expect(lead.contact.name).toBe('Not found yet');
+    expect(lead.contact.title).toBe('No verified public person captured');
+    expect(lead.contact.summary).toBe('Use the business phone/email first. Add a named contact only after the website, LinkedIn, registry source, or call confirms a real person.');
     expect(lead.sources).toContainEqual(expect.objectContaining({ label: 'OpenStreetMap candidate record' }));
     expect(lead.discoveryQuestions.length).toBeGreaterThanOrEqual(3);
-    expect(lead.websiteAudit.technicalNotes.join(' ')).toContain('Workflow profile generated');
+    expect(lead.websiteAudit.technicalNotes.join(' ')).not.toContain('Coordinates:');
+    expect(lead.websiteAudit.technicalNotes.join(' ')).toContain('Street address: 485 South Avenue');
+    expect(lead.mapsUrl).toBe('https://www.google.com/maps/search/?api=1&query=Ryfan%20Industrial%20Electric%20485%20South%20Avenue%20Spruce%20Grove%2C%20AB');
   });
 
   it('records profile refresh metadata when provided without implying live source revalidation', () => {
@@ -117,6 +120,10 @@ describe('real candidate OSINT profile builder', () => {
     ]));
     expect(lead.websiteAudit.conversionIssues).toContain('Validated website has 1 form(s); inspect destination, routing, notification owner, and CRM capture.');
     expect(lead.contact.email).toBe('service@ryfan.ca');
+    expect(lead.contact.name).toBe('Jane Smith');
+    expect(lead.contact.title).toBe('Operations Manager');
+    expect(lead.contact.summary).toBe('Found on a public company source. Verify current role before personalized outreach.');
+    expect(lead.contact.sources).toContainEqual(expect.objectContaining({ label: 'Verified point of contact', url: 'https://www.ryfan.ca/about' }));
   });
 
   it('builds a source validation queue with statuses for website, reviews, jobs, contact, and decision maker', () => {

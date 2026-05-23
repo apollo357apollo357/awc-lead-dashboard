@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import * as cheerio from 'cheerio';
 import { candidateBusinesses } from '../src/data/candidateBusinesses';
 import { buildAwcEnrichmentFromWebsite } from '../src/lib/enrichment';
 import { normalizeCandidateWebsite } from '../src/lib/osint';
@@ -53,6 +54,48 @@ async function fetchWebsiteHtml(url: string): Promise<string> {
   return response.text();
 }
 
+function findAboutPageUrls(baseUrl: string, html: string): string[] {
+  const $ = cheerio.load(html);
+  const seen = new Set<string>();
+  const candidates = $('a[href]')
+    .map((_, element) => {
+      const href = $(element).attr('href') ?? '';
+      const text = $(element).text().replace(/\s+/g, ' ').trim();
+      if (!/about|team|staff|leadership|our story|who we are/i.test(`${text} ${href}`)) return undefined;
+      try {
+        const url = new URL(href, baseUrl);
+        const base = new URL(baseUrl);
+        if (url.hostname !== base.hostname) return undefined;
+        url.hash = '';
+        return url.toString();
+      } catch {
+        return undefined;
+      }
+    })
+    .get()
+    .filter((url): url is string => Boolean(url));
+
+  return candidates.filter((url) => {
+    if (seen.has(url)) return false;
+    seen.add(url);
+    return true;
+  }).slice(0, 3);
+}
+
+async function fetchAdditionalPages(baseUrl: string, html: string) {
+  const urls = findAboutPageUrls(baseUrl, html);
+  const pages = [];
+  for (const url of urls) {
+    try {
+      pages.push({ url, html: await fetchWebsiteHtml(url) });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      process.stderr.write(`  Skipped linked research page ${url}: ${message}\n`);
+    }
+  }
+  return pages;
+}
+
 function selectCandidates(options: CliOptions) {
   const withWebsites = candidateBusinesses.filter((candidate) => normalizeCandidateWebsite(candidate.website));
   if (options.id) {
@@ -77,11 +120,13 @@ async function main() {
 
     try {
       const html = await fetchWebsiteHtml(url);
+      const additionalPages = await fetchAdditionalPages(url, html);
       const enrichment = buildAwcEnrichmentFromWebsite({
         candidateId: candidate.id,
         companyName: candidate.companyName,
         url,
-        html
+        html,
+        additionalPages
       });
       const outputPath = path.join(options.outputDir, `${candidate.id}.json`);
       await writeFile(outputPath, `${JSON.stringify(enrichment, null, 2)}\n`);

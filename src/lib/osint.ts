@@ -116,6 +116,47 @@ function buildSellingPoints(candidate: CandidateBusiness): string[] {
   ];
 }
 
+function buildGoogleMapsUrl(candidate: CandidateBusiness): string | undefined {
+  const query = [candidate.companyName, candidate.address, candidate.location].filter(Boolean).join(' ');
+  if (!query) return undefined;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
+function buildContactProfile(input: {
+  candidate: CandidateBusiness;
+  industry: string;
+  website: string;
+  websiteEnrichment?: AwcWebsiteEnrichment;
+}): Lead['contact'] {
+  const { candidate, industry, website, websiteEnrichment } = input;
+  const decisionMaker = websiteEnrichment?.decisionMakerEvidence[0];
+  const email = websiteEnrichment?.contacts.emails[0] ?? candidate.email;
+  const phone = websiteEnrichment?.contacts.phones[0] ?? candidate.phone;
+
+  return {
+    name: decisionMaker?.name ?? 'Not found yet',
+    title: decisionMaker?.title ?? 'No verified public person captured',
+    email,
+    phone,
+    summary: decisionMaker
+      ? 'Found on a public company source. Verify current role before personalized outreach.'
+      : 'Use the business phone/email first. Add a named contact only after the website, LinkedIn, registry source, or call confirms a real person.',
+    conversationOpeners: [
+      `I was looking at ${candidate.companyName}'s public business listing and had a practical question about your intake/follow-up workflow.`,
+      candidate.website ? `I saw the website listed as ${website}; I wanted to understand what happens after a new inquiry comes in.` : 'I found your public business listing and wanted to ask how new inquiries are handled today.',
+      `For ${industry.toLowerCase()} teams, the hidden bottleneck is often not marketing — it is the handoff after the lead arrives.`
+    ],
+    boundaries: [
+      'Lead with public business context, not personal details.',
+      'Keep the conversation on intake, follow-up, handoffs, and tool alignment.',
+      'Capture exact reservations, feedback, and friction for Kadwell content and funnel updates.'
+    ],
+    sources: decisionMaker
+      ? [{ label: 'Verified point of contact', url: decisionMaker.sourceUrl, note: `${decisionMaker.name} — ${decisionMaker.title}` }]
+      : [{ label: 'OpenStreetMap candidate record', url: candidate.sourceUrl, note: sourceIdForCandidate(candidate) }]
+  };
+}
+
 type BuildLeadProfileOptions = {
   refreshedAt?: string;
   websiteEnrichment?: AwcWebsiteEnrichment;
@@ -236,6 +277,8 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, opti
   const hiringScore = scoreHiringSignals(hiringSignals);
   const hasHiringSignal = hiringSignals.length > 0;
   const websiteEnrichment = options.websiteEnrichment?.candidateId === candidate.id ? options.websiteEnrichment : undefined;
+  const contact = buildContactProfile({ candidate, industry, website, websiteEnrichment });
+  const mapsUrl = buildGoogleMapsUrl(candidate);
   const validatedWebsiteSource = websiteEnrichment ? buildValidatedWebsiteSource(websiteEnrichment) : undefined;
   const lastSourceValidatedAt = websiteEnrichment?.sources[0]?.capturedAt;
   const reviewEvidenceSources = (websiteEnrichment?.reviewEvidence ?? []).map((source) => ({
@@ -272,6 +315,7 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, opti
     niches: inferNiches(candidate),
     location,
     address: candidate.address,
+    mapsUrl,
     phone: candidate.phone,
     status: 'New',
     summary: `${candidate.companyName} is a real public candidate from ${candidate.source} in ${location}. The OSINT profile turns the public listing into AWC-specific outreach prep focused on intake, follow-up, handoffs, and tool alignment.`,
@@ -305,24 +349,7 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, opti
     hiringSignalScore: hiringScore.total,
     osintRefreshedAt: options.refreshedAt,
     jobPostSignals: hiringSignals,
-    contact: {
-      name: 'Business owner / operations lead',
-      title: `Decision maker for ${candidate.companyName}`,
-      email: websiteEnrichment?.contacts.emails[0] ?? candidate.email,
-      phone: websiteEnrichment?.contacts.phones[0] ?? candidate.phone,
-      summary: 'Start with the owner/operator or operations lead unless a public website, LinkedIn page, registry page, or call discovery identifies a more specific contact.',
-      conversationOpeners: [
-        `I was looking at ${candidate.companyName}'s public business listing and had a practical question about your intake/follow-up workflow.`,
-        candidate.website ? `I saw the website listed as ${website}; I wanted to understand what happens after a new inquiry comes in.` : 'I found your public business listing and wanted to ask how new inquiries are handled today.',
-        `For ${industry.toLowerCase()} teams, the hidden bottleneck is often not marketing — it is the handoff after the lead arrives.`
-      ],
-      boundaries: [
-        'Lead with public business context, not personal details.',
-        'Keep the conversation on intake, follow-up, handoffs, and tool alignment.',
-        'Capture exact reservations, feedback, and friction for Kadwell content and funnel updates.'
-      ],
-      sources: [{ label: 'OpenStreetMap candidate record', url: candidate.sourceUrl, note: sourceIdForCandidate(candidate) }]
-    },
+    contact,
     websiteAudit: {
       grade: website ? 'C' : 'D',
       conversionIssues: [
@@ -345,10 +372,9 @@ export function buildLeadProfileFromCandidate(candidate: CandidateBusiness, opti
         'Capture one concrete public friction point before calling so the outreach feels specific.'
       ],
       technicalNotes: [
-        'Workflow profile generated from real public seed data and AWC outreach scoring. Scores are triage aids, not verified claims of pain.',
-        ...(options.refreshedAt ? [`Profile refreshed ${options.refreshedAt}; regenerated against the current AWC asks, buckets, and scoring architecture without live source revalidation.`] : []),
-        `Seed source: ${sourceIdForCandidate(candidate)}`,
-        `Coordinates: ${candidate.lat}, ${candidate.lon}`
+        ...(candidate.address ? [`Street address: ${candidate.address}`] : []),
+        ...(options.refreshedAt ? [`Profile refreshed ${options.refreshedAt}.`] : []),
+        `Seed source: ${sourceIdForCandidate(candidate)}`
       ]
     },
     accountability: {
