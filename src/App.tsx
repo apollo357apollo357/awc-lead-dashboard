@@ -6,6 +6,7 @@ import type { AwcWebsiteEnrichment } from './lib/enrichment';
 import type { CallLog, CandidateBusiness, Lead } from './types';
 import { buildLeadProfileFromCandidate } from './lib/osint';
 import { calculatePriorityScore, countWeeklyConversations, createVoicemailScript, gradeLead, summarizeLeadForCall } from './lib/leadScoring';
+import { removeDuplicateTestingCallLog } from './lib/callLogs';
 import './styles.css';
 
 const CALL_LOG_STORAGE_KEY = 'awc-lead-call-logs-v1';
@@ -23,7 +24,7 @@ const loadCallLogs = (): CallLog[] => {
 
   try {
     const raw = window.localStorage.getItem(CALL_LOG_STORAGE_KEY);
-    return raw ? JSON.parse(raw) as CallLog[] : [];
+    return raw ? removeDuplicateTestingCallLog(JSON.parse(raw) as CallLog[]) : [];
   } catch {
     return [];
   }
