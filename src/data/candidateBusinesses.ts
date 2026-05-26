@@ -933,4 +933,718 @@ export const candidateBusinesses: CandidateBusiness[] = [
       "craft": "roofer"
     }
   }
+,
+  {
+    "id": "osm-seed-harmony-dental",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/3398572893",
+    "companyName": "Harmony Dental",
+    "category": "dentist",
+    "location": "Edmonton, AB",
+    "address": "10063 118 Street NW",
+    "website": "https://harmonydentalgroup.ca/",
+    "phone": "+1-780-424-3230",
+    "email": "",
+    "lat": 53.5407535,
+    "lon": -113.5247004,
+    "publicTags": {
+          "amenity": "dentist",
+          "opening_hours": "Mo-Tu 08:00-16:00, We 11:30-19:00; Th 11:00-19:00; Fr 08:00-14:30"
+    }
+  },
+  {
+    "id": "osm-seed-adster-creative-inc",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/4493315760",
+    "companyName": "Adster Creative Inc.",
+    "category": "company",
+    "location": "Edmonton, AB",
+    "address": "9816 44 Ave, A",
+    "website": "https://www.adster.ca/",
+    "phone": "+1-780-800-2328",
+    "email": "",
+    "lat": 53.5386507,
+    "lon": -113.4977568,
+    "publicTags": {
+          "office": "company",
+          "opening_hours": "Mo-Fr 09:00-17:30",
+          "description": "Adster Creative is a Google Partner located in Edmonton, Alberta and helps companies win new customers and grow their online presence using a variety of professional Search Engine Optimization, Google AdWords Management and Website Optimization strategies"
+    }
+  },
+  {
+    "id": "osm-seed-mobile-safety",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/4887204772",
+    "companyName": "Mobile Safety",
+    "category": "company",
+    "location": "Edmonton, AB",
+    "address": "7309 50 Street Northwest, 202",
+    "website": "http://www.mobilesafety.ca",
+    "phone": "+1-780-242-5381",
+    "email": "jim@mobilesafety.ca",
+    "lat": 53.5092559,
+    "lon": -113.417465,
+    "publicTags": {
+          "office": "company"
+    }
+  },
+  {
+    "id": "osm-seed-maynes-and-radovici-lawyers",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/5203623129",
+    "companyName": "Maynes & Radovici Lawyers",
+    "category": "lawyer",
+    "location": "Edmonton, AB",
+    "address": "10665 First Edmonton Place, 14th Floor, Jasper Avenue",
+    "website": "https://mayradlaw.com/",
+    "phone": "+1-780-235-3377",
+    "email": "",
+    "lat": 53.5405839,
+    "lon": -113.5039501,
+    "publicTags": {
+          "office": "lawyer",
+          "opening_hours": "Mo-Th 09:00-16:30",
+          "description": "Maynes & Radovici Lawyers represents injured parties, aiming for large settlements to compensate our clients."
+    }
+  },
+  {
+    "id": "osm-seed-mtek-digital-agency",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/5332081852",
+    "companyName": "Mtek Digital Agency",
+    "category": "it",
+    "location": "Edmonton, AB",
+    "address": "8711 50 Street NW, 214",
+    "website": "https://www.mtekdigital.ca",
+    "phone": "+1-780-409-2525",
+    "email": "general@microtekcorporation.com",
+    "lat": 53.5205144,
+    "lon": -113.4155406,
+    "publicTags": {
+          "office": "it",
+          "opening_hours": "Mo-Fr 09:00-17:00"
+    }
+  },
+  {
+    "id": "osm-seed-verhaeghe-law-office",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/5432774749",
+    "companyName": "Verhaeghe Law Office",
+    "category": "lawyer",
+    "location": "Edmonton, AB",
+    "address": "10525 170 Street, #203",
+    "website": "https://freedomlaw.ca/",
+    "phone": "+1-587-410-2500",
+    "email": "",
+    "lat": 53.5506982,
+    "lon": -113.6141444,
+    "publicTags": {
+          "office": "lawyer",
+          "opening_hours": "Mo-Fr 08:30-16:30",
+          "description": "Family Law Lawyers serving Edmonton, Spruce Grove, Stony Plain, Leduc, Fort Saskatchewan, Athabasca & Whitecourt."
+    }
+  },
+  {
+    "id": "osm-seed-blacklight-media-canada",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/6094787822",
+    "companyName": "Blacklight Media Canada",
+    "category": "advertising_agency",
+    "location": "Edmonton, AB",
+    "address": "9841 74 Avenue NW",
+    "website": "https://blacklightmedia.ca/",
+    "phone": "+1-506-878-7246",
+    "email": "christian@blacklightmedia.ca",
+    "lat": 53.5102474,
+    "lon": -113.4852241,
+    "publicTags": {
+          "office": "advertising_agency"
+    }
+  },
+  {
+    "id": "osm-seed-darkhorse-analytics",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/6626347112",
+    "companyName": "Darkhorse Analytics",
+    "category": "consulting",
+    "location": "Edmonton, AB",
+    "address": "10507 Saskatchewan Drive NW",
+    "website": "https://www.darkhorseanalytics.com",
+    "phone": "",
+    "email": "",
+    "lat": 53.5229843,
+    "lon": -113.50089,
+    "publicTags": {
+          "office": "consulting"
+    }
+  },
+  {
+    "id": "osm-seed-incite-strategy",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/6626347113",
+    "companyName": "Incite Strategy",
+    "category": "consulting",
+    "location": "Edmonton, AB",
+    "address": "10507 Saskatchewan Drive NW",
+    "website": "https://incitestrategy.ca",
+    "phone": "",
+    "email": "",
+    "lat": 53.5230202,
+    "lon": -113.500838,
+    "publicTags": {
+          "office": "consulting"
+    }
+  },
+  {
+    "id": "osm-seed-volant-products-inc",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/6639630470",
+    "companyName": "Volant Products Inc.",
+    "category": "company",
+    "location": "Edmonton, AB",
+    "address": "4110 56 Avenue NW",
+    "website": "https://www.volantproducts.ca/",
+    "phone": "+1 780 490 5185",
+    "email": "",
+    "lat": 53.4932288,
+    "lon": -113.404514,
+    "publicTags": {
+          "office": "company"
+    }
+  },
+  {
+    "id": "osm-seed-noetic-engineering",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/6639630471",
+    "companyName": "Noetic Engineering",
+    "category": "company",
+    "location": "Edmonton, AB",
+    "address": "4120 56 Avenue NW",
+    "website": "https://www.noetic.ca",
+    "phone": "+1-780-414-6241",
+    "email": "",
+    "lat": 53.4932312,
+    "lon": -113.4051457,
+    "publicTags": {
+          "office": "company"
+    }
+  },
+  {
+    "id": "osm-seed-the-genomic-clinic",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/6684210170",
+    "companyName": "The Genomic Clinic",
+    "category": "clinic",
+    "location": "Edmonton, AB",
+    "address": "16923 125 Street NW",
+    "website": "https://www.thegenomicclinic.com/",
+    "phone": "+1-780-476-5637",
+    "email": "info@thegenomicclinic.com",
+    "lat": 53.630854,
+    "lon": -113.5386798,
+    "publicTags": {
+          "amenity": "clinic",
+          "healthcare": "clinic",
+          "healthcare:speciality": "men's_health;lda_immunotherapy;iv_therapy;shockwave_therapy;priapus_shot;health_screening",
+          "opening_hours": "Mo-Fr 09:00-19:00; Sa,Su off"
+    }
+  },
+  {
+    "id": "osm-seed-wilmax-construction-ltd",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/6694093697",
+    "companyName": "Wilmax Construction LTD",
+    "category": "construction_company",
+    "location": "Edmonton, AB",
+    "address": "11367 174 St NW, 4",
+    "website": "http://wilmax.ca",
+    "phone": "+1-780-430-8777",
+    "email": "",
+    "lat": 53.561952,
+    "lon": -113.6203667,
+    "publicTags": {
+          "office": "construction_company",
+          "opening_hours": "Mo-Fr 07:00-17:00",
+          "operator": "James Nixon",
+          "start_date": "1984"
+    }
+  },
+  {
+    "id": "osm-seed-timber-benefits",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/7646172465",
+    "companyName": "Timber Benefits",
+    "category": "insurance",
+    "location": "Edmonton, AB",
+    "address": "8617 104 St NW",
+    "website": "https://timberbenefits.com",
+    "phone": "+1-587-404-9090",
+    "email": "hello@timberbenefits.com",
+    "lat": 53.5225788,
+    "lon": -113.4972203,
+    "publicTags": {
+          "office": "insurance",
+          "opening_hours": "Mo-Fr 08:30-16:30; Sa,Su off"
+    }
+  },
+  {
+    "id": "osm-seed-centerline-paving",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/7648636573",
+    "companyName": "Centerline Paving",
+    "category": "company",
+    "location": "Edmonton, AB",
+    "address": "367 Kline Crescent NW",
+    "website": "https://www.centerlinepaving.ca",
+    "phone": "+1-780-739-3387",
+    "email": "",
+    "lat": 53.4851013,
+    "lon": -113.3967905,
+    "publicTags": {
+          "office": "company",
+          "opening_hours": "Mo-Su 07:00-19:00",
+          "description": "Centerline Paving is a family-owned and operated company serving Edmonton and the surrounding areas."
+    }
+  },
+  {
+    "id": "osm-seed-yegtel-communications-inc",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/8313046767",
+    "companyName": "YEGTEL Communications INC.",
+    "category": "telecommunication",
+    "location": "Edmonton, AB",
+    "address": "15334 123 Avenue NW, 200",
+    "website": "https://yegtel.ca",
+    "phone": "+1 780-809-9990",
+    "email": "",
+    "lat": 53.5770715,
+    "lon": -113.586619,
+    "publicTags": {
+          "office": "telecommunication",
+          "opening_hours": "Mo-Fr 09:00-17:00"
+    }
+  },
+  {
+    "id": "osm-seed-timber-haus-developments",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/8578288170",
+    "companyName": "Timber Haus Developments",
+    "category": "estate_agent",
+    "location": "Edmonton, AB",
+    "address": "1665 91 Street SW",
+    "website": "https://www.timberhaus.ca/",
+    "phone": "+1-780-695-0245",
+    "email": "info@timberhaus.ca",
+    "lat": 53.4177393,
+    "lon": -113.4786881,
+    "publicTags": {
+          "office": "estate_agent",
+          "opening_hours": "Mo-Fr 08:00-17:00",
+          "description": "Timber Haus Developments is a custom builder inspired by Edmonton's heritage, history and iconic river valley. Timber Haus offers the reliability of a reputable builder, with the nuance, exclusivity and craftsmanship of an artisan carpenter.  Our philosop",
+          "start_date": "2018"
+    }
+  },
+  {
+    "id": "osm-seed-edmonton-towing-and-recovery-services",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/8578670814",
+    "companyName": "Edmonton Towing & Recovery Services",
+    "category": "company",
+    "location": "Edmonton, AB",
+    "address": "504 67 Avenue NW",
+    "website": "https://edmontontowingservices.com/",
+    "phone": "+1 780-700-4500",
+    "email": "",
+    "lat": 53.5041143,
+    "lon": -113.3503411,
+    "publicTags": {
+          "office": "company",
+          "opening_hours": "24/7"
+    }
+  },
+  {
+    "id": "osm-seed-cmb-insurance-brokers",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/9255939453",
+    "companyName": "CMB Insurance Brokers",
+    "category": "insurance",
+    "location": "Edmonton, AB",
+    "address": "1430 91 St SW, #201",
+    "website": "https://www.cmbinsurance.ca/",
+    "phone": "+1 780-424-2727",
+    "email": "",
+    "lat": 53.41962,
+    "lon": -113.478894,
+    "publicTags": {
+          "office": "insurance",
+          "opening_hours": "Mo-Fr 09:00-18:00",
+          "operator": "Ben McDonald"
+    }
+  },
+  {
+    "id": "osm-seed-armour-insurance-car-home-business-farm-and-life-edmonton",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/9489461396",
+    "companyName": "Armour Insurance, Car, Home, Business, Farm & Life, Edmonton",
+    "category": "insurance",
+    "location": "Edmonton, AB",
+    "address": "5750 75 Street NW",
+    "website": "https://www.armourinsurance.ca/",
+    "phone": "+1 780-475-0959",
+    "email": "main@armourinsurance.ca",
+    "lat": 53.4945706,
+    "lon": -113.443558,
+    "publicTags": {
+          "office": "insurance"
+    }
+  },
+  {
+    "id": "osm-seed-the-internet-centre-inc",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/9806898938",
+    "companyName": "The Internet Centre Inc",
+    "category": "telecommunication",
+    "location": "Edmonton, AB",
+    "address": "4130 95 Street NW",
+    "website": "https://incentre.net/",
+    "phone": "+1-780-450-6787",
+    "email": "",
+    "lat": 53.4773293,
+    "lon": -113.4759354,
+    "publicTags": {
+          "office": "telecommunication",
+          "opening_hours": "Mo-Fr 05:00-17:00"
+    }
+  },
+  {
+    "id": "osm-seed-pace-technologies-inc",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/9806898943",
+    "companyName": "Pace Technologies Inc",
+    "category": "corporate_office",
+    "location": "Edmonton, AB",
+    "address": "9604 41 Avenue NW",
+    "website": "https://www.pacetechnologies.com/",
+    "phone": "+1-780-450-0404",
+    "email": "",
+    "lat": 53.4769007,
+    "lon": -113.4775859,
+    "publicTags": {
+          "office": "corporate_office",
+          "opening_hours": "Mo-Fr 08:00-17:00"
+    }
+  },
+  {
+    "id": "osm-seed-edmonton-fasteners-and-tools-ltd",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/9806898945",
+    "companyName": "Edmonton Fasteners & Tools Ltd",
+    "category": "fastener_supplier",
+    "location": "Edmonton, AB",
+    "address": "9619 42 Avenue NW",
+    "website": "https://edmfast.com/",
+    "phone": "+1-780-434-3666",
+    "email": "",
+    "lat": 53.478503,
+    "lon": -113.4786593,
+    "publicTags": {
+          "office": "fastener_supplier",
+          "opening_hours": "Mo-Fr 07:00-17:00"
+    }
+  },
+  {
+    "id": "osm-seed-complete-communications-inc",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/9806898948",
+    "companyName": "Complete Communications Inc.",
+    "category": "telecommunication",
+    "location": "Edmonton, AB",
+    "address": "4103 97 Street NW",
+    "website": "https://www.completephones.com/",
+    "phone": "+1-780-469-4060",
+    "email": "",
+    "lat": 53.4770172,
+    "lon": -113.4789208,
+    "publicTags": {
+          "office": "telecommunication",
+          "opening_hours": "Mo-Fr 08:00-16:00"
+    }
+  },
+  {
+    "id": "osm-seed-yeg-digital",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/9838079962",
+    "companyName": "YEG Digital",
+    "category": "advertising_agency",
+    "location": "Edmonton, AB",
+    "address": "10665 Jasper Avenue NW, 1400",
+    "website": "https://yegdigital.com",
+    "phone": "+1 780-884-0591",
+    "email": "hello@yegdigital.com",
+    "lat": 53.5406358,
+    "lon": -113.5040868,
+    "publicTags": {
+          "office": "advertising_agency",
+          "opening_hours": "Mo-Fr 09:00-17:00",
+          "start_date": "2017-1-1"
+    }
+  },
+  {
+    "id": "osm-seed-parhar-dental-group",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/10139127971",
+    "companyName": "Parhar Dental Group",
+    "category": "dentist",
+    "location": "Edmonton, AB",
+    "address": "4222 66 Street NW",
+    "website": "https://parhardentalgroup.com/",
+    "phone": "+1 780 450 6200",
+    "email": "",
+    "lat": 53.4810925,
+    "lon": -113.4441412,
+    "publicTags": {
+          "amenity": "dentist",
+          "healthcare": "dentist"
+    }
+  },
+  {
+    "id": "osm-seed-millbourne-mall-dental-clinic",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/10181298325",
+    "companyName": "Millbourne Mall Dental Clinic",
+    "category": "dentist",
+    "location": "Edmonton, AB",
+    "address": "7629 38 Avenue NW, 130",
+    "website": "https://www.millbournemalldental.com/",
+    "phone": "+1 780 462 9200",
+    "email": "millbournemalldental@yahoo.com",
+    "lat": 53.4717957,
+    "lon": -113.4503542,
+    "publicTags": {
+          "amenity": "dentist",
+          "healthcare": "dentist"
+    }
+  },
+  {
+    "id": "osm-seed-alberta-s-permanent-roofing-ltd",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/10276909772",
+    "companyName": "Alberta's Permanent Roofing Ltd",
+    "category": "roofer",
+    "location": "Edmonton, AB",
+    "address": "13432 143 Street NW, 5129",
+    "website": "https://www.albertaspermanentroofing.com/",
+    "phone": "",
+    "email": "",
+    "lat": 53.5965,
+    "lon": -113.569193,
+    "publicTags": {
+          "craft": "roofer"
+    }
+  },
+  {
+    "id": "osm-seed-space-engine-systems",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/10307299032",
+    "companyName": "Space Engine Systems",
+    "category": "company",
+    "location": "Edmonton, AB",
+    "address": "4032 23 Avenue NW, 318",
+    "website": "https://www.spaceenginesystems.com/canadian-operations",
+    "phone": "+1 780 430 9383",
+    "email": "",
+    "lat": 53.4548624,
+    "lon": -113.563162,
+    "publicTags": {
+          "office": "company"
+    }
+  },
+  {
+    "id": "osm-seed-immigration-nation",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/10309470037",
+    "companyName": "Immigration Nation",
+    "category": "lawyer",
+    "location": "Edmonton, AB",
+    "address": "9038 51 Avenue NW, 206",
+    "website": "https://www.immigration-nation.ca/",
+    "phone": "+1 780-800-0113",
+    "email": "",
+    "lat": 53.4885786,
+    "lon": -113.4651852,
+    "publicTags": {
+          "office": "lawyer"
+    }
+  },
+  {
+    "id": "osm-seed-alberta-strong-movers",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/10781731960",
+    "companyName": "Alberta Strong Movers",
+    "category": "moving_company",
+    "location": "Edmonton, AB",
+    "address": "20937 95 Avenue Northwest",
+    "website": "https://albertastrongmovers.ca/locations/edmonton/",
+    "phone": "+1-587-202-3330",
+    "email": "youareimportant@albertastrongmovers.ca",
+    "lat": 53.5319963,
+    "lon": -113.6814978,
+    "publicTags": {
+          "office": "moving_company",
+          "opening_hours": "Mo-Fr 08:00-18:00, Sa-Su 10:00-14:00",
+          "description": "We are a motivated moving company with a positive attitude! Packing, boxes, moving, unpacking, appliance and piano moving, local and long distance moves, and standard cargo insurance included, we cover all your bases.",
+          "start_date": "2018"
+    }
+  },
+  {
+    "id": "osm-seed-snap-seo",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/11104116199",
+    "companyName": "Snap SEO",
+    "category": "advertising_agency",
+    "location": "Edmonton, AB",
+    "address": "21944 91 Avenue Northwest",
+    "website": "https://snapseo.ca",
+    "phone": "+1-587-989-7736",
+    "email": "",
+    "lat": 53.5250904,
+    "lon": -113.6953051,
+    "publicTags": {
+          "office": "advertising_agency",
+          "amenity": "Digital Marketing Edmonton",
+          "opening_hours": "Mo-Fr 09:00-18:00",
+          "description": "Snap SEO is a leading digital marketing agency specializing in search engine optimization strategies to enhance online visibility and drive organic traffic for businesses."
+    }
+  },
+  {
+    "id": "osm-seed-monyo-law",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/11503266553",
+    "companyName": "MONYO LAW",
+    "category": "lawyer",
+    "location": "Edmonton, AB",
+    "address": "6650 177 Street NW, #438",
+    "website": "https://monyolaw.ca/",
+    "phone": "+1 825-480-6106",
+    "email": "jmonyo-maina@monyolaw.ca",
+    "lat": 53.5024168,
+    "lon": -113.6280891,
+    "publicTags": {
+          "office": "lawyer",
+          "opening_hours": "Mo-Fr 08:30-16:30",
+          "description": "A boutique law firm that prides itself of providing affordable, convenient and practical legal services to all our clients. We have a flexible schedule that meets our clients needs in the areas of real estate, wills and estate and immigration law.",
+          "start_date": "2017-10-01"
+    }
+  },
+  {
+    "id": "osm-seed-vanguard-cleaning-systems-of-edmonton",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/12470744512",
+    "companyName": "Vanguard Cleaning Systems of Edmonton",
+    "category": "cleaning",
+    "location": "Edmonton, AB",
+    "address": "4986 92 Avenue NW",
+    "website": "https://www.vanguardcleaning.ca/cleaning/edmonton-alberta/",
+    "phone": "+1-780-988-0590",
+    "email": "",
+    "lat": 53.5272732,
+    "lon": -113.4168989,
+    "publicTags": {
+          "craft": "cleaning",
+          "opening_hours": "Mo-Fr 08:30-16:30",
+          "start_date": "2008-09-01"
+    }
+  },
+  {
+    "id": "osm-seed-the-gentleman-plumbers",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/13250352849",
+    "companyName": "The Gentleman Plumbers",
+    "category": "plumber",
+    "location": "Edmonton, AB",
+    "address": "6053 Gateway Boulevard NW",
+    "website": "https://thegentlemenpros.com",
+    "phone": "+1 780-701-9965",
+    "email": "",
+    "lat": 53.4988932,
+    "lon": -113.4925282,
+    "publicTags": {
+          "craft": "plumber",
+          "opening_hours": "24/7"
+    }
+  },
+  {
+    "id": "osm-seed-cloudbridge-solutions",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/13036661101",
+    "companyName": "Cloudbridge Solutions",
+    "category": "company",
+    "location": "Edmonton, AB",
+    "address": "#201, 13235 146 Street NW, 201",
+    "website": "https://cloudbridge.solutions/",
+    "phone": "+1 780-665-6000",
+    "email": "support@cloudbridge.solutions",
+    "lat": 53.5929107,
+    "lon": -113.5716468,
+    "publicTags": {
+          "office": "company",
+          "opening_hours": "Mo-Fr 08:00-17:00"
+    }
+  },
+  {
+    "id": "osm-seed-generation-technology-solutions",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/12848021201",
+    "companyName": "Generation Technology Solutions",
+    "category": "company",
+    "location": "Edmonton, AB",
+    "address": "11904 113 Avenue NW",
+    "website": "https://www.generation.ca/",
+    "phone": "+1-780-413-9908",
+    "email": "",
+    "lat": 53.5626321,
+    "lon": -113.5274806,
+    "publicTags": {
+          "office": "company",
+          "opening_hours": "Mo-Fr 08:00-16:30"
+    }
+  },
+  {
+    "id": "osm-seed-parkland-geo-ltd",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/13099023801",
+    "companyName": "Parkland Geo Ltd.",
+    "category": "company",
+    "location": "Edmonton, AB",
+    "address": "603 69 Avenue NW",
+    "website": "https://www.parklandgeo.com/",
+    "phone": "+1 780-416-1755",
+    "email": "",
+    "lat": 53.5051339,
+    "lon": -113.3507061,
+    "publicTags": {
+          "office": "company",
+          "opening_hours": "Mo-Fr 09:00-17:00"
+    }
+  },
+  {
+    "id": "osm-seed-shores-canada-ltd",
+    "source": "OpenStreetMap",
+    "sourceUrl": "https://www.openstreetmap.org/node/13118855592",
+    "companyName": "Shores Canada Ltd",
+    "category": "brand_visibility_engineer",
+    "location": "Edmonton, AB",
+    "address": "12503 131 Avenue NW",
+    "website": "https://www.shorescanada.com",
+    "phone": "+1-780-474-8083",
+    "email": "",
+    "lat": 53.5905376,
+    "lon": -113.5385367,
+    "publicTags": {
+          "office": "brand_visibility_engineer",
+          "opening_hours": "Mo-Fr 09:00-17:00",
+          "description": "Shores Canada makes startups and small businesses visible. We design corporate identities, print products, websites, online shops, blogs, news portals, magazines, and offer media production and optimization services.",
+          "start_date": "2005-02-24"
+    }
+  }
 ];
